@@ -22,6 +22,7 @@ import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
 import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
+import starImage from "/src/images/sp2.png";
 
 
 function wait(milliseconds) {
@@ -216,7 +217,7 @@ class Main
     this._load_skybox();
     scene.add(this.skyGroup);
     this._initPostProcess();
-    //this._generateStarField();
+    this._generateStarField();
     //this._initComets();
     this._initText();
     this.shootingStars.push(new ShootingStar(this));
@@ -275,7 +276,7 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    let sprite = this.textureLoader.load("/src/images/sp2.png");
+    let sprite = this.textureLoader.load(starImage);
     let material = new THREE.PointsMaterial({
       color: 'white',
       vertexColors: true,
