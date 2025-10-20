@@ -229,7 +229,7 @@ class Main
     this._initText();
     this.shootingStars.push(new ShootingStar(this));
     window.addEventListener("resize", () => this._onResize());
-    let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+    let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
     console.log("init");
