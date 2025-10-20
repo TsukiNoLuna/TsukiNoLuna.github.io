@@ -82,7 +82,7 @@ export class SectionText
         textGeo.setAttribute('position', position);
         textGeo.setAttribute('color', color);
         textGeo.computeBoundingBox();
-        let sprite = new THREE.TextureLoader().load("./images/sp2.png");
+        let sprite = new THREE.TextureLoader().load("./src/images/sp2.png");
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,

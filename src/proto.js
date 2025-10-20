@@ -17,7 +17,6 @@ import { PointEmitter, ConeEmitter } from 'three.quarks';
 import { IntervalValue, ConstantValue, ConstantColor } from 'three.quarks';
 import { ColorOverLife, SizeOverLife, FrameOverLife, SpeedOverLife} from 'three.quarks';
 import { ColorRange, PiecewiseBezier, Bezier, RenderMode, ApplyForce } from 'three.quarks';
-import { AnimatedMesh, AnimatedStarMesh } from './objects/AnimatedMesh';
 import { clamp } from 'three/src/math/MathUtils.js';
 import { buffer, sign } from 'three/tsl';
 import { Comet } from './objects/Comet';
@@ -229,7 +228,7 @@ class Main
   }
   _initLoadingButton()
   {
-    const path = 'images/Buttons/Loading_Button/Loading_000';
+    const path = 'src/images/Buttons/Loading_Button/Loading_000';
     this.loadButtonFrames = getAnimationFrames(path, 4);
     this.loadButtonIndex = 3;
 
@@ -277,7 +276,7 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    let sprite = this.textureLoader.load("./images/sp2.png");
+    let sprite = this.textureLoader.load("./src/images/sp2.png");
     let material = new THREE.PointsMaterial({
       color: 'white',
       vertexColors: true,
@@ -321,8 +320,8 @@ class Main
   _load_skybox()
   {
     //load skybox textures
-    const skyTopBotTex = this.textureLoader.load('./images/Skycylinder/MikuProCon_skycylinder_TOP.png');
-    const skySideTex = this.textureLoader.load('./images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
+    const skyTopBotTex = this.textureLoader.load('./src/images/Skycylinder/MikuProCon_skycylinder_TOP.png');
+    const skySideTex = this.textureLoader.load('./src/images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
     skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
     skySideTex.colorSpace = THREE.SRGBColorSpace;
     //create material for each face of skybox (cylinder)
@@ -344,10 +343,10 @@ class Main
     this.skyGroup.add(skyCylinder);
     
     //similar process for city skyline
-    const topTex = this.textureLoader.load('./images/nothingness.png');
-    const botTex = this.textureLoader.load('./images/nothingness.png');
-    const sideTex = this.textureLoader.load('./images/Skybox_DRAFT_FGLayer.png');
-    const sideTex2 = this.textureLoader.load('./images/Skybox_DRAFT_BGLayer.png');
+    const topTex = this.textureLoader.load('./src/images/nothingness.png');
+    const botTex = this.textureLoader.load('./src/images/nothingness.png');
+    const sideTex = this.textureLoader.load('./src/images/Skybox_DRAFT_FGLayer.png');
+    const sideTex2 = this.textureLoader.load('./src/images/Skybox_DRAFT_BGLayer.png');
     sideTex.colorSpace = THREE.SRGBColorSpace;
     sideTex2.colorSpace = THREE.SRGBColorSpace;
     const topMat = new THREE.MeshBasicMaterial({
@@ -402,13 +401,13 @@ class Main
   _initAnimations()
   {
     //create meshes with animated vocaloids
-    this.animations.push(new AnimatedMesh("Miku", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Miku", 100, 6, 6, this.scene));
     //this.animations.push(new AnimatedMesh("Rin", 100, 6, 6, this.scene));
     //this.animations.push(new AnimatedMesh("Len", 100, 6, 6, this.scene));
-    this.animations.push(new AnimatedMesh("Kagamine", 100, 6, 6, this.scene));
-    this.animations.push(new AnimatedMesh("Luka", 100, 6, 6, this.scene));
-    this.animations.push(new AnimatedMesh("Meiko", 100, 6, 6, this.scene));
-    this.animations.push(new AnimatedMesh("Kaito", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Kagamine", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Luka", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Meiko", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Kaito", 100, 6, 6, this.scene));
  
 
   }
