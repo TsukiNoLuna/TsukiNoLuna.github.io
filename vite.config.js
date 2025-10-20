@@ -1,5 +1,7 @@
-import { defineConfig } from 'vite';
+/** 
+ * @type {import('vite').UserConfig}
+*/
 
-export default defineConfig({
-  root: '.'
-})
+export default{
+  base: process.env.NODE_ENV === 'production' ? '/TsukiNoLuna.github.io/' : ''
+}

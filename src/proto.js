@@ -227,7 +227,7 @@ class Main
   }
   _initLoadingButton()
   {
-    const path = 'src/images/Buttons/Loading_Button/Loading_000';
+    const path = '/src/images/Buttons/Loading_Button/Loading_000';
     this.loadButtonFrames = getAnimationFrames(path, 4);
     this.loadButtonIndex = 3;
 
@@ -472,7 +472,7 @@ class Main
         this.loadTimer = 0;
         this.loadButtonIndex++;
         this.loadButtonIndex %= this.loadButtonFrames.length;
-        document.getElementById("loadingbtn").src=this.loadButtonFrames[this.loadButtonIndex];
+        //document.getElementById("loadingbtn").src=this.loadButtonFrames[this.loadButtonIndex];
       }
     }
     
