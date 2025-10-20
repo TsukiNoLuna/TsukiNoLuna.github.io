@@ -19,7 +19,6 @@ import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
 //import { ColorRange, PiecewiseBezier, Bezier, RenderMode, ApplyForce } from 'three.quarks';
 //import { clamp } from 'three/src/math/MathUtils.js';
 //import { buffer, sign } from 'three/tsl';
-import { Comet } from './objects/Comet';
 import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
