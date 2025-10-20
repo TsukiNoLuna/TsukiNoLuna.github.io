@@ -22,7 +22,7 @@ import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
 import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
-import starImage from "/src/images/sp2.png";
+import starImage from "./images/sp2.png";
 
 
 function wait(milliseconds) {
