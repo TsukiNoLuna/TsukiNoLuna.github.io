@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 //import { getScreenPosition, pass, renderOutput, uniform } from 'three/tsl';
 //import { chromaticAberration } from 'three/addons/tsl/display/ChromaticAberrationNode.js';
-import { PostProcessing, Vector2, Vector3 } from 'three/webgpu';
+//import { PostProcessing, Vector2, Vector3 } from 'three/webgpu';
 import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
 //import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass } from "postprocessing";
@@ -249,7 +249,7 @@ class Main
     const postProcess = new EffectComposer(this.renderer);
     postProcess.addPass(new RenderPass(this.scene, this.camera));
     postProcess.addPass(new EffectPass(this.camera, new ChromaticAberrationEffect({
-      offset: new Vector2(0.001, 0.001),
+      offset: new THREE.Vector2(0.001, 0.001),
       radialModulation: true,
       modulationOffset: 0
     })));
