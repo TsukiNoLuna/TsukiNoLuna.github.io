@@ -22,7 +22,6 @@ import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
 import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
-import starImage from "./images/sp2.png";
 
 
 function wait(milliseconds) {
@@ -276,7 +275,7 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    let sprite = this.textureLoader.load(starImage);
+    let sprite = this.textureLoader.load("/src/images/sp2.png");
     let material = new THREE.PointsMaterial({
       color: 'white',
       vertexColors: true,
