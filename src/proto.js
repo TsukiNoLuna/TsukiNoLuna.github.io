@@ -23,6 +23,13 @@ import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
 import star from './images/sp2.png';
+import skyTopTex from './images/nothingness.png';
+import skyBotTex from './images/nothingness.png';
+import skySideTex1 from './images/Skybox_DRAFT_FGLayer.png';
+import skySideTex2 from './images/Skybox_DRAFT_BGLayer.png';
+import skyTopBotTexStr from './images/Skycylinder/MikuProCon_skycylinder_TOP.png';
+import skySideTexStr from './images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png';
+
 
 
 function wait(milliseconds) {
@@ -321,8 +328,8 @@ class Main
   _load_skybox()
   {
     //load skybox textures
-    const skyTopBotTex = this.textureLoader.load('/src/images/Skycylinder/MikuProCon_skycylinder_TOP.png');
-    const skySideTex = this.textureLoader.load('/src/images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
+    const skyTopBotTex = this.textureLoader.load(skyTopBotTexStr);
+    const skySideTex = this.textureLoader.load(skySideTexStr);
     skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
     skySideTex.colorSpace = THREE.SRGBColorSpace;
     //create material for each face of skybox (cylinder)
@@ -344,10 +351,10 @@ class Main
     this.skyGroup.add(skyCylinder);
     
     //similar process for city skyline
-    const topTex = this.textureLoader.load('/src/images/nothingness.png');
-    const botTex = this.textureLoader.load('/src/images/nothingness.png');
-    const sideTex = this.textureLoader.load('/src/images/Skybox_DRAFT_FGLayer.png');
-    const sideTex2 = this.textureLoader.load('/src/images/Skybox_DRAFT_BGLayer.png');
+    const topTex = this.textureLoader.load(skyTopTex);
+    const botTex = this.textureLoader.load(skyBotTex);
+    const sideTex = this.textureLoader.load(skySideTex1);
+    const sideTex2 = this.textureLoader.load(skySideTex2);
     sideTex.colorSpace = THREE.SRGBColorSpace;
     sideTex2.colorSpace = THREE.SRGBColorSpace;
     const topMat = new THREE.MeshBasicMaterial({

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
+import star from '../images/sp2.png';
 
 
 export class PageText
@@ -137,7 +138,7 @@ export class PageText
         textGeo.setAttribute('position', position);
         textGeo.setAttribute('color', color);
         textGeo.computeBoundingBox();
-        let sprite = new THREE.TextureLoader().load("/src/images/sp2.png");
+        let sprite = new THREE.TextureLoader().load(star);
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,

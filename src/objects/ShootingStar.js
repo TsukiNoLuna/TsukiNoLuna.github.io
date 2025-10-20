@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
+import star from '../images/sp2.png';
 
 
 function getStarPos2(minDist, distRange)
@@ -70,7 +71,7 @@ export class ShootingStar
   }
   _initStar()
   {
-    const map = new THREE.TextureLoader().load("/src/images/sp2.png");
+    const map = new THREE.TextureLoader().load(star);
     const spriteMat = new THREE.SpriteMaterial({map});
     spriteMat.transparent = true;
     spriteMat.depthWrite = false;
