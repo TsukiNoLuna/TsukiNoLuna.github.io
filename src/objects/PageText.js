@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import TWEEN, { update } from '/node_modules/three/examples/jsm/libs/tween.module.js';
+import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 
 
 export class PageText

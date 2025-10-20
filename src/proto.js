@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 //import * as THREE from 'three/webgpu';
-import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 //import SpriteText from 'three-spritetext';
 //import { Player } from "textalive-app-api";
 //import { Tween } from 'three/examples/jsm/libs/tween.module.js';
-import TWEEN, { update } from '/node_modules/three/examples/jsm/libs/tween.module.js';
+import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 //import { getScreenPosition, pass, renderOutput, uniform } from 'three/tsl';
 //import { chromaticAberration } from 'three/addons/tsl/display/ChromaticAberrationNode.js';
 //import { PostProcessing, Vector2, Vector3 } from 'three/webgpu';
