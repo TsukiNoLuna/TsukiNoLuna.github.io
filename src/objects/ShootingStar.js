@@ -70,7 +70,7 @@ export class ShootingStar
   }
   _initStar()
   {
-    const map = new THREE.TextureLoader().load("./images/sp2.png");
+    const map = new THREE.TextureLoader().load("/src/images/sp2.png");
     const spriteMat = new THREE.SpriteMaterial({map});
     spriteMat.transparent = true;
     spriteMat.depthWrite = false;

@@ -275,7 +275,7 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    let sprite = this.textureLoader.load("./src/images/sp2.png");
+    let sprite = this.textureLoader.load("/src/images/sp2.png");
     let material = new THREE.PointsMaterial({
       color: 'white',
       vertexColors: true,
@@ -319,8 +319,8 @@ class Main
   _load_skybox()
   {
     //load skybox textures
-    const skyTopBotTex = this.textureLoader.load('./src/images/Skycylinder/MikuProCon_skycylinder_TOP.png');
-    const skySideTex = this.textureLoader.load('./src/images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
+    const skyTopBotTex = this.textureLoader.load('/src/images/Skycylinder/MikuProCon_skycylinder_TOP.png');
+    const skySideTex = this.textureLoader.load('/src/images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
     skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
     skySideTex.colorSpace = THREE.SRGBColorSpace;
     //create material for each face of skybox (cylinder)
@@ -342,10 +342,10 @@ class Main
     this.skyGroup.add(skyCylinder);
     
     //similar process for city skyline
-    const topTex = this.textureLoader.load('./src/images/nothingness.png');
-    const botTex = this.textureLoader.load('./src/images/nothingness.png');
-    const sideTex = this.textureLoader.load('./src/images/Skybox_DRAFT_FGLayer.png');
-    const sideTex2 = this.textureLoader.load('./src/images/Skybox_DRAFT_BGLayer.png');
+    const topTex = this.textureLoader.load('/src/images/nothingness.png');
+    const botTex = this.textureLoader.load('/src/images/nothingness.png');
+    const sideTex = this.textureLoader.load('/src/images/Skybox_DRAFT_FGLayer.png');
+    const sideTex2 = this.textureLoader.load('/src/images/Skybox_DRAFT_BGLayer.png');
     sideTex.colorSpace = THREE.SRGBColorSpace;
     sideTex2.colorSpace = THREE.SRGBColorSpace;
     const topMat = new THREE.MeshBasicMaterial({
