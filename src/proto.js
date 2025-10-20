@@ -1,0 +1,496 @@
+import * as THREE from 'three';
+//import * as THREE from 'three/webgpu';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import SpriteText from 'three-spritetext';
+import { Player } from "textalive-app-api";
+//import { Tween } from 'three/examples/jsm/libs/tween.module.js';
+import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
+//import { getScreenPosition, pass, renderOutput, uniform } from 'three/tsl';
+//import { chromaticAberration } from 'three/addons/tsl/display/ChromaticAberrationNode.js';
+import { PostProcessing, Vector2, Vector3 } from 'three/webgpu';
+import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
+//import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js';
+import { BloomEffect, EffectComposer, EffectPass, RenderPass } from "postprocessing";
+import { ChromaticAberrationEffect } from 'postprocessing';
+import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
+import { PointEmitter, ConeEmitter } from 'three.quarks';
+import { IntervalValue, ConstantValue, ConstantColor } from 'three.quarks';
+import { ColorOverLife, SizeOverLife, FrameOverLife, SpeedOverLife} from 'three.quarks';
+import { ColorRange, PiecewiseBezier, Bezier, RenderMode, ApplyForce } from 'three.quarks';
+import { AnimatedMesh, AnimatedStarMesh } from './objects/AnimatedMesh';
+import { clamp } from 'three/src/math/MathUtils.js';
+import { buffer, sign } from 'three/tsl';
+import { Comet } from './objects/Comet';
+import { ShootingStar } from './objects/ShootingStar';
+import { SectionText } from './objects/SectionText';
+import { PageText } from './objects/PageText';
+
+
+function wait(milliseconds) {
+  //simple sleep function
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+function getScreenDistance(position1, position2, camera) {
+  // Input World Positions
+  const out = [];
+  // Project to screen
+  const screenPosition1 = position1.clone().project(camera);
+  const screenPosition2 = position2.clone().project(camera);
+
+  // Convert to Vector2
+  const screenVector1 = new THREE.Vector2(screenPosition1.x, screenPosition1.y);
+  const screenVector2 = new THREE.Vector2(screenPosition2.x, screenPosition2.y);
+
+  // Calculate 2D distance
+  const screenDistance = screenVector1.distanceTo(screenVector2);
+  //horizontal and vertical distance in normalized device coordinates
+  const ndcX = Math.abs(screenVector1.x - screenVector2.x);
+  const ndcY = Math.abs(screenVector1.y - screenVector2.y);
+  let w = document.documentElement.clientWidth;
+  let h = document.documentElement.clientHeight;
+  //convert to pixels
+  const pixelX = (ndcX * 0.5 + 0.5) * w;
+  const pixelY = (ndcY * 0.5 + 0.5) * h;
+  out.push(pixelX);
+  out.push(pixelY);
+  //returns vector of horizontal and vertical distance
+  return out;
+}
+function getAnimationFrames(path, numFrames) {
+  //grab frames from folder
+  const fileType = ".png";
+  const frames = [];
+  for(let i = 1; i <= numFrames; i++)
+  {
+    frames.push(`${i}`);
+  }
+  const frameStrings = frames.map(frame => {
+      return path + frame + fileType;
+  });
+  return frameStrings;
+}
+
+const songInfo = ["https://piapro.jp/t/ULcJ/20250205120202", 4694275, 2830730, 2946478, 67810, 20654, "ストリートライト / 加賀(ネギシャワーP)"];
+class Main
+{
+  constructor()
+  {
+    this.position = 0;
+    this.active = false;
+    this.distRange = 20;
+    this.rotRange = Math.PI/6;
+    this.vertRotRange = Math.PI/14;
+    this.minDist = 20;
+    this.collisionRadius = 6;
+    this.lyricHorizontalDistanceRatio = 10;
+    this.lyricVerticalDistanceRatio = 8;
+    this.starAmount = 600;
+    this.starMinDist = 10;
+    this.starDistRange = 50;
+    this.twinkleTweens = Array(this.starAmount).fill(undefined);
+    this.minTwinkleTime = 1000;
+    this.textMinTwinkleTime = 2000;
+    this.twinkleTimeRange = 3000;
+    this.textTwinkleTimeRange = 4000;
+    this.twinkleDelayRange = 2000;
+    this.shootingStars = [];
+    this.animatedStars = [];
+    this.sectionTexts = [];
+    this.comets = [];
+    this.shootingStarSpawnTime = 8;
+    this.shootingStarSpawnChance = 0.8;
+    this.starTimer = 0;
+    this.minPolarAngle = 2.15;
+    this.polarAngleCutoff = 0.4;
+    this.lineFadeOutTime = 1000;
+    this.maxLineFadeInTime = 1500;
+    this.lyricFadeInTime = 300;
+    this.lyricFadeInDist = 1.5;
+    this.lyricEraseCutoff = 2000;
+    this.erasingSprite = undefined;
+    this.sprites = [];
+    this.spriteCollision = [];
+    this.lines = [];
+    this.drawingLine = false;
+    this.animations = [];
+    this.ready = false;
+    this.loadButtonFPS = 2;
+    this.loadFrameTime = 1 / this.loadButtonFPS;
+    this.loadTimer = 0.5;
+    this.textReady = false;
+    //this.textTimer = 2.0;
+    this.abortController = new AbortController();
+    this.signal = this.abortController.signal;
+    this._initScene();
+    this._update();
+
+  }
+
+  _onResize()
+  {
+    //change width and height on necessary elements
+    let w = document.documentElement.clientWidth;
+    let h = document.documentElement.clientHeight;
+    this.screenW = w;
+    this.screenH = h;
+    this.camera.aspect = w/h;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
+    this.shootingStars.forEach(currentValue => {
+      currentValue._onResize();
+    })
+    this.comets.forEach(currentValue => {
+      currentValue._onResize();
+    })
+    console.log("resize");
+  }
+
+  _onClick(event)
+  {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, this.camera);
+    const textobjects = this.sectionTexts.map((element) => {
+      return element.boundingBox;
+    });
+    for(let i = 0; i < this.sectionTexts.length; i++)
+      {
+        if(raycaster.ray.intersectsBox(textobjects[i]))
+        {
+          this.sectionTexts[i]._onClick(event);
+        }
+      }
+    
+     
+  }
+
+  _initScene()
+  {
+    //Init scene, camera, controls, and renderer
+    let w = document.documentElement.clientWidth;
+    let h = document.documentElement.clientHeight;
+    this.screenW = w;
+    this.screenH = h;
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera( 60, w / h, 0.1, 35000 );
+    let renderer = new THREE.WebGLRenderer({
+      powerPreference: "high-performance",
+      antialias: false,
+      stencil: false,
+      alpha: false
+    });
+    //let renderer = new THREE.WebGPURenderer({"antialias": true, alpha: false});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize( w, h );
+    //renderer.toneMapping = THREE.NoToneMapping;
+    document.getElementById("view").appendChild(renderer.domElement);
+    let controls = new OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.minPolarAngle = this.minPolarAngle;
+    camera.position.set(0.0, 0.0, -0.01);
+
+    const amb_light = new THREE.AmbientLight(0x909090);
+    //scene.add(amb_light);
+    const hemi_light = new THREE.HemisphereLight(0x21266e, 0x080820, 0.2);
+    //scene.add(hemi_light);
+
+    
+    let sky_group = new THREE.Group();
+    let textureLoader = new THREE.TextureLoader();
+
+    this.scene = scene;
+    this.camera = camera;
+    this.renderer = renderer;
+    this.controls = controls;
+    this.skyGroup = sky_group;
+    this.textureLoader = textureLoader;
+    this.clock = new THREE.Clock();
+    this.batchSystem = new BatchedRenderer();
+    scene.add(this.batchSystem);
+    //initialize environment elements
+    this._initLoadingButton();
+    this._load_skybox();
+    scene.add(this.skyGroup);
+    this._initPostProcess();
+    //this._generateStarField();
+    //this._initComets();
+    this._initText();
+    this.shootingStars.push(new ShootingStar(this));
+    window.addEventListener("resize", () => this._onResize());
+    window.addEventListener("click", (event) => this._onClick(event));
+    //renderer.domElement.addEventListener('click'. )
+    console.log("init");
+  }
+  _initLoadingButton()
+  {
+    const path = 'images/Buttons/Loading_Button/Loading_000';
+    this.loadButtonFrames = getAnimationFrames(path, 4);
+    this.loadButtonIndex = 3;
+
+  }
+  _initComets()
+  {
+    //initialize vocaloid comets
+    this.comets.push(new Comet(this, "Miku"));
+    this.comets.push(new Comet(this, "Luka"));
+    this.comets.push(new Comet(this, "Kaito"));
+    this.comets.push(new Comet(this, "Len"));
+    this.comets.push(new Comet(this, "Rin"));
+    this.comets.push(new Comet(this, "Meiko"));
+  }
+  _initPostProcess()
+  {
+    //initiate post processing effects
+    const postProcess = new EffectComposer(this.renderer);
+    postProcess.addPass(new RenderPass(this.scene, this.camera));
+    postProcess.addPass(new EffectPass(this.camera, new ChromaticAberrationEffect({
+      offset: new Vector2(0.001, 0.001),
+      radialModulation: true,
+      modulationOffset: 0
+    })));
+    postProcess.addPass(new EffectPass(this.camera, new BloomEffect({
+      luminanceThreshold: 0.1,
+      intensity: 1
+    })));
+    this.postProcess = postProcess;
+  }
+
+  _generateStarField()
+  {
+    //generate random star positions
+    let position = new THREE.BufferAttribute( new Float32Array(this.starAmount*3), 3),
+    color = new THREE.BufferAttribute( new Float32Array(this.starAmount*4), 4);
+    let v = new THREE.Vector3();
+    for( let i=0; i<this.starAmount; i++ )
+    {
+      v.randomDirection().setLength(this.starMinDist + Math.random() * this.starDistRange);
+      position.setXYZ( i, v.x, v.y, v.z );
+      color.setXYZW( i, 1, 1, 1, 1);
+    }
+    let	geo = new THREE.BufferGeometry( );
+    geo.setAttribute( 'position', position );
+    geo.setAttribute( 'color', color );
+    //add texture
+    let sprite = this.textureLoader.load("./images/sp2.png");
+    let material = new THREE.PointsMaterial({
+      color: 'white',
+      vertexColors: true,
+      size: 1,
+      sizeAttenuation: true,
+      map: sprite,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    let starField = new THREE.Points(geo, material);
+    this.scene.add(starField);
+    this.starField = starField;
+    for( let i=0; i<this.starAmount; i++ )
+    {
+      this._twinkle(i);
+    }
+  }
+
+  async _twinkle(idx)
+  {
+    //have generated stars blink at random intervals and for a random duration
+    await (wait(Math.random() * this.twinkleDelayRange));
+    const dur = this.minTwinkleTime + Math.random() * this.twinkleTimeRange;
+    let v = new THREE.Vector2(1, 0);
+    this.twinkleTweens[idx] = new TWEEN
+    .Tween(v)
+    .to({x: -1}, dur)
+    .onUpdate(() => {
+      const abs = Math.abs(this.twinkleTweens[idx]._object.x);
+      this.starField.geometry.getAttribute('color').setXYZW(idx, 1, 1, 1, abs);
+      this.starField.geometry.getAttribute('color').needsUpdate = true;
+    })
+    .onComplete(() => {
+      this._twinkle(idx);
+    })
+    .start();
+  }
+
+
+  _load_skybox()
+  {
+    //load skybox textures
+    const skyTopBotTex = this.textureLoader.load('./images/Skycylinder/MikuProCon_skycylinder_TOP.png');
+    const skySideTex = this.textureLoader.load('./images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png');
+    skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
+    skySideTex.colorSpace = THREE.SRGBColorSpace;
+    //create material for each face of skybox (cylinder)
+    const skyTopMat = new THREE.MeshBasicMaterial({ map : skyTopBotTex, side:THREE.BackSide, transparent: true });
+    const skySideMat = new THREE.MeshBasicMaterial({ map : skySideTex, side:THREE.BackSide, transparent: true });
+    const skyBotMat = skyTopMat.clone();
+    const skyMats = [
+      skySideMat,
+      skyTopMat,
+      skyBotMat,
+    ];
+    //calculate radius based on width (circumference) to height ratio of texture
+    const skyCircum2height = 3;
+    const skyFactor = skyCircum2height / (2 * Math.PI);
+    const skyHeight = 14000;
+    const skyGeo = new THREE.CylinderGeometry(skyHeight * skyFactor, skyHeight * skyFactor, skyHeight, 10000);
+    const skyCylinder = new THREE.Mesh(skyGeo, skyMats);
+    skyCylinder.position.y += 6000;
+    this.skyGroup.add(skyCylinder);
+    
+    //similar process for city skyline
+    const topTex = this.textureLoader.load('./images/nothingness.png');
+    const botTex = this.textureLoader.load('./images/nothingness.png');
+    const sideTex = this.textureLoader.load('./images/Skybox_DRAFT_FGLayer.png');
+    const sideTex2 = this.textureLoader.load('./images/Skybox_DRAFT_BGLayer.png');
+    sideTex.colorSpace = THREE.SRGBColorSpace;
+    sideTex2.colorSpace = THREE.SRGBColorSpace;
+    const topMat = new THREE.MeshBasicMaterial({
+      map: topTex,
+      transparent: true,
+      side: THREE.BackSide
+    });
+    const botMat = new THREE.MeshBasicMaterial({
+      map: botTex,
+      transparent: true,
+      side: THREE.BackSide
+    });
+    const sideMat = new THREE.MeshBasicMaterial({
+      map: sideTex,
+      transparent: true,
+      side: THREE.BackSide
+    });
+    const sideMat2 = new THREE.MeshBasicMaterial({
+      map: sideTex2,
+      transparent: true,
+      side: THREE.BackSide
+    });
+    const materials = [
+      sideMat,
+      topMat,
+      botMat
+    ];
+    const materials2 = [
+      sideMat2,
+      topMat,
+      botMat
+    ];
+    const circum2height = 4;
+    const factor = circum2height / (2 * Math.PI);
+    const height = 5;
+    //ratio of distance from foreground to background
+    const distratio = 2000;
+    const geo = new THREE.CylinderGeometry(height * factor, height * factor, height, 1000);
+    const geo2 = new THREE.CylinderGeometry(height * factor * distratio, height * factor * distratio, height * distratio, 1000);
+    const cylinder = new THREE.Mesh(geo, materials);
+    const cylinder2 = new THREE.Mesh(geo2, materials2);
+    cylinder.renderOrder = 3;
+    cylinder2.renderOrder = 2;
+    cylinder.position.y += 1;
+    cylinder2.position.y += distratio;
+
+    this.skyGroup.add(cylinder);
+    this.skyGroup.add(cylinder2);
+    //this._initAnimations();
+
+  }
+  _initAnimations()
+  {
+    //create meshes with animated vocaloids
+    this.animations.push(new AnimatedMesh("Miku", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Rin", 100, 6, 6, this.scene));
+    //this.animations.push(new AnimatedMesh("Len", 100, 6, 6, this.scene));
+    this.animations.push(new AnimatedMesh("Kagamine", 100, 6, 6, this.scene));
+    this.animations.push(new AnimatedMesh("Luka", 100, 6, 6, this.scene));
+    this.animations.push(new AnimatedMesh("Meiko", 100, 6, 6, this.scene));
+    this.animations.push(new AnimatedMesh("Kaito", 100, 6, 6, this.scene));
+ 
+
+  }
+
+  _initText()
+  {
+    this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
+    this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 300, 500)));
+    this.sectionTexts.push(new SectionText(this, 'IM HERE', new THREE.Vector3(500, 500, -500)));
+    //new PageText(this, 'prob not gonna work', new Vector2(-0.1, 0.1), new Vector2(0.1, -0.1));
+    //this.sectionTexts.push(new SectionText(this, this.scene, this.camera, 'Luna Gary'));
+    /*this.fontName = 'Courier New';
+    this.textureFontSize = 100;
+    this.textString = 'Luna Gary';
+    this.textCanvas = document.createElement('canvas');
+    this.textCanvas.style.textAlign = 'center';
+    this.textCtx = this.textCanvas.getContext('2d');
+    //document.body.appendChild(this.textCanvas);
+    this._sampleCoordinates();*/
+
+    
+  }
+
+
+  _textFX()
+  {
+
+  }
+
+
+  _update() {
+    requestAnimationFrame(this._update.bind(this));
+    if(this.controls.enabled)
+    {
+      this.controls.update();
+    }
+    const delta = this.clock.getDelta();
+    this.starTimer += delta;
+    TWEEN.update();
+    this.batchSystem.update(this.clock.getDelta());
+    //chance to spawn shooting stars at interval
+    if(this.starTimer >= this.shootingStarSpawnTime)
+    {
+      this.starTimer = 0;
+      if(Math.random() <= this.shootingStarSpawnChance) this.shootingStars.push(new ShootingStar(this));
+    }
+    //update objects
+    this.shootingStars.forEach(currentValue => {
+      currentValue._update(delta);
+    })
+    this.comets.forEach(currentValue => {
+      currentValue._update(delta, this.player.isPlaying);
+    })
+    this.animations.forEach(anim => {
+      anim.update(delta);
+    });
+    //check for end of song
+    if(!this.ready)
+    {
+      this.loadTimer += delta;
+      if(this.loadTimer >= this.loadFrameTime)
+      {
+        this.loadTimer = 0;
+        this.loadButtonIndex++;
+        this.loadButtonIndex %= this.loadButtonFrames.length;
+        document.getElementById("loadingbtn").src=this.loadButtonFrames[this.loadButtonIndex];
+      }
+    }
+    
+    this.sectionTexts.forEach(currentValue => {
+      currentValue._onUpdate();
+    })
+
+    this.postProcess.render();
+  }
+
+}
+
+
+
+
+
+
+
+new Main()

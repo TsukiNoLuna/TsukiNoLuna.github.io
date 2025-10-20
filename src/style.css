@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html, body {
+    overflow: hidden;
+}
+
+
+#view {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    overflow: hidden;
+    cursor: pointer;
+}
+#view canvas {
+    width: 100%;
+    height: 100%;
+}
+
+
+#media {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 2;
+}
+
+#Buttons{
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    width: 20%;
+    z-index: 3;
+}
+#Buttons #playbtn{
+    width: 50%;
+    height: 50%;
+    display: none;
+}
+#Buttons #pausebtn{
+    width: 50%;
+    height: 50%;
+    display: none;
+}
+#Buttons #loadingbtn
+{
+    width: 50%;
+    height: 50%;
+}
+#Buttons #restartbtn
+{
+    max-width: 40%;
+    max-height: 40%;
+    display: none;
+}

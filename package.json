@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@types/three": "^0.178.0",
+    "meshline": "^3.3.1",
+    "postprocessing": "^6.37.4",
+    "songle-api": "^1.2.2",
+    "textalive-app-api": "^0.4.0",
+    "three": "github:mrdoob/three.js",
+    "three-spritetext": "^1.9.6",
+    "three.quarks": "^0.16.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.2"
+  },
+  "name": "html2",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
