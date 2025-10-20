@@ -18,7 +18,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "gh-pages -d dist",
-    "build": "vite build"
+    "build": "vite build",
+    "dev": "next dev",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
