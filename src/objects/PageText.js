@@ -54,16 +54,14 @@ export class PageText
         //console.log(this.lim);
         let height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
         height *= 2;
-
-        while(this.W * this.H / (metrics.w * height) < len)
+        while(this.W * this.H / (metrics.width * (1.1 * height)) < len && this.fontSize != 1)
         {
-            this.fontSize -= 2;
+            this.fontSize -= 1;
             this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
             metrics = this.textCtx.measureText(text);
             height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
             height *= 2;
             this.lim = this.W / metrics.width;
-            console.log('here');
         }
         //console.log(height);
         let chars = 0;
@@ -117,7 +115,7 @@ export class PageText
                 }
             }
         }
-        console.log(textPoints);
+        //console.log(textPoints);
         this._generateText(textPoints);
     }
     _sample_coordinates()
@@ -160,8 +158,8 @@ export class PageText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size: 8,
-                sizeAttenuation: false,
+                size: 30,
+                sizeAttenuation: true,
                 map: sprite,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
@@ -224,7 +222,7 @@ export class PageText
         //{   
         //    this._textTwinkle(i);
         //}
-        console.log(this.textCloud);
+        //console.log(this.textCloud);
         this.boundingBox = new THREE.Box3();
         this.boundingBox.setFromObject(this.textCloud);
         this.onScreen = false;

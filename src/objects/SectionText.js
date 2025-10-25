@@ -285,6 +285,7 @@ export class SectionText
          this.camera.quaternion.copy(this.origQuat);
          this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
          this.camera.zoom = 1 + this.cameraTween._object.x;
+         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
