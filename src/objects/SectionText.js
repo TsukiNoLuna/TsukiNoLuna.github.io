@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import { PageText } from './PageText';
 import star from '../images/sp2.png';
+import fileUrl from '../Text/AboutMe.txt'
 
 
 function wait(milliseconds) {
@@ -288,7 +289,8 @@ export class SectionText
         })
         .onComplete(() => {
          this.scene.remove(this.textCloud);
-         new PageText(this.main, 'prob not gonna work wait were so close omg this needs to be wrapped indefinitely because hey thats how it is you know anyways how is your day?', new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
+         //new PageText(this.main, 'prob not gonna work wait were so close omg this needs to be wrapped indefinitely because hey thats how it is you know anyways how is your day?', new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
+         new PageText(this.main, fileUrl, new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
          this.cameraTween = null;
         })
         .start();

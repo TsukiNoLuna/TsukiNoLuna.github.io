@@ -5,11 +5,11 @@ import star from '../images/sp2.png';
 
 export class PageText
 {
-    constructor(main, text, tL, bR, rot)
+    constructor(main, textFile, tL, bR, rot)
     {
         this.camera = main.camera;
         this.scene = main.scene;
-        this.textString = text;
+        this.textString = '';
         this.fontName = 'Courier New';
         this.fontSize = 40;
         this.textCanvas = document.createElement('canvas');
@@ -28,11 +28,18 @@ export class PageText
         //console.log(this.H);
         this.rot = rot;
 
-        //this._sample_coordinates();
-        this._splitWords();
+        fetch(textFile)
+        .then(r=>r.text())
+        .then(text =>
+        {
+            this.textString = text;
+            this._splitWords();
+        })
+
     }
     _splitWords()
     {
+        const len = this.textString.length;
         this.words = this.textString.split(' ');
         //this.lim = 46;
         //const linesNumber = this.textString.length % (this.lim);
@@ -42,11 +49,22 @@ export class PageText
         this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
         this.textCtx.fillStyle = '#2a9d8f';
         const text = 'Y';
-        const metrics = this.textCtx.measureText(text);
+        let metrics = this.textCtx.measureText(text);
         this.lim = this.W / metrics.width;
         //console.log(this.lim);
         let height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
         height *= 2;
+
+        while(this.W * this.H / (metrics.w * height) < len)
+        {
+            this.fontSize -= 2;
+            this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
+            metrics = this.textCtx.measureText(text);
+            height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+            height *= 2;
+            this.lim = this.W / metrics.width;
+            console.log('here');
+        }
         //console.log(height);
         let chars = 0;
         let line = '    ';
