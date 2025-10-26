@@ -32,6 +32,7 @@ import skySideTexStr from './images/Skycylinder/MikuProCon_skycylinder_SIDESv07.
 
 
 
+
 function wait(milliseconds) {
   //simple sleep function
   return new Promise(resolve => {
@@ -424,8 +425,9 @@ class Main
   _initText()
   {
     this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
-    this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 300, 500)));
-    this.sectionTexts.push(new SectionText(this, 'IM HERE', new THREE.Vector3(500, 500, -500)));
+    this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
+    this.sectionTexts.push(new SectionText(this, 'Game Dev', new THREE.Vector3(500, 500, -500)));
+
     //new PageText(this, 'prob not gonna work', new Vector2(-0.1, 0.1), new Vector2(0.1, -0.1));
     //this.sectionTexts.push(new SectionText(this, this.scene, this.camera, 'Luna Gary'));
     /*this.fontName = 'Courier New';

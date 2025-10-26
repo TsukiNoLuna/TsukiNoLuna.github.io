@@ -20,12 +20,18 @@ export class PageText
         this.tL.unproject(this.camera);
         this.bR = new THREE.Vector3(bR.x, bR.y, depth);
         this.bR.unproject(this.camera);
-        //console.log(this.tL);
-        //console.log(this.bR);
-        this.W = Math.abs(this.bR.clone().sub(this.tL).x);
-        this.H = Math.abs(this.bR.clone().sub(this.tL).y);
-        //console.log(this.W);
-        //console.log(this.H);
+        console.log(this.tL);
+        console.log(this.bR);
+        const right = new THREE.Vector3(1, 0, 0);
+        const up = new THREE.Vector3(0, 1, 0);
+        right.applyQuaternion(this.camera.quaternion);
+        up.applyQuaternion(this.camera.quaternion);
+        let dist = this.bR.clone();
+        dist.sub(this.tL);
+        this.W = Math.abs(dist.dot(right));
+        this.H = Math.abs(dist.dot(up));
+        console.log(this.W);
+        console.log(this.H);
         this.rot = rot;
 
         fetch(textFile)
@@ -63,7 +69,6 @@ export class PageText
             height *= 2;
             this.lim = this.W / metrics.width;
         }
-        //console.log(height);
         let chars = 0;
         let line = '    ';
         let lineInd = 0;
@@ -177,6 +182,47 @@ export class PageText
         if(this.tL.z < 0)
         {
             this.textCloud.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
+            this.offset = new THREE.Vector3(-(this.textCanvas.width/2 + this.tL.x), this.textCanvas.height/2 + this.tL.y, this.tL.z);
+            
+        }
+        else{
+            this.offset = new THREE.Vector3(this.textCanvas.width/2 + this.tL.x, this.textCanvas.height/2 + this.tL.y, this.tL.z);
+        }
+        this.textCloud.position.copy(this.tL);
+
+        this.boundingBox = new THREE.Box3();
+        this.boundingBox.setFromObject(this.textCloud);
+        this.center = new THREE.Vector3();
+        this.boundingBox.getCenter(this.center);
+        const boxMat = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+        const boxGeo = new THREE.BoxGeometry(50, 50, 50);
+        const cube = new THREE.Mesh(boxGeo, boxMat);
+        cube.position.copy(this.center);
+        cube.lookAt(this.camera.position);
+        this.textCloud.rotation.x = this.rot.x;
+        this.textCloud.rotation.z = this.rot.z;
+        this.textCloud.rotation.y = this.rot.y;
+        this.textCloud.updateMatrixWorld();
+        this.boundingBox.setFromObject(this.textCloud);
+        this.boundingBox.getCenter(this.center);
+        cube.position.copy(this.textCloud.position);
+        this.scene.add(this.textCloud);
+        this.boundingBox = new THREE.Box3();
+        this.boundingBox.setFromObject(this.textCloud);
+        this.onScreen = false;
+        this.textReady = true;
+        this.textLen = len;
+        this._tweenIn();
+    }
+
+        _repositionText(len)
+    {
+        this.pos = new THREE.Vector3(this.tL.x, this.tL.y, 0.5);
+        this.pos.unproject(this.camera);
+        this.textCloud.rotateZ(Math.PI);
+        if(this.tL.z < 0)
+        {
+            this.textCloud.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
             //this.offset = new THREE.Vector3(-this.pos.x, this.pos.y, this.pos.z);
             this.offset = new THREE.Vector3(-(this.textCanvas.width/2 + this.tL.x), this.textCanvas.height/2 + this.tL.y, this.tL.z);
             
@@ -230,6 +276,8 @@ export class PageText
         this.textLen = len;
         this._tweenIn();
     }
+
+
     _tweenIn()
     {
         let z = new THREE.Vector3(0, 0, 0);
@@ -243,6 +291,13 @@ export class PageText
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
         })
         .start();
+    }
+
+    _remove()
+    {
+        this.scene.remove(this.textCloud);
+        this.textCloud.geometry.dispose();
+        this.textCloud.material.dispose();
     }
 
 }

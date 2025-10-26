@@ -2,8 +2,14 @@ import * as THREE from 'three';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import { PageText } from './PageText';
 import star from '../images/sp2.png';
-import fileUrl from '../Text/AboutMe.txt'
+import aboutMe from '../Text/AboutMe.txt'
 
+
+const Sections = {
+  "Luna Gary": [aboutMe, undefined],
+  "About Me": [aboutMe, undefined],
+  "Game Dev": [aboutMe, undefined]
+};
 
 function wait(milliseconds) {
   //simple sleep function
@@ -83,6 +89,7 @@ export class SectionText
         let textGeo = new THREE.BufferGeometry();
         textGeo.setAttribute('position', position);
         textGeo.setAttribute('color', color);
+        textGeo.center();
         textGeo.computeBoundingBox();
         let sprite = new THREE.TextureLoader().load(star);
         let material = new THREE.PointsMaterial({
@@ -99,18 +106,16 @@ export class SectionText
         this._positionText(len);
     }
     
-    _positionText(len)
+    _positionTextOLD(len)
     {
         this.textCloud.rotateZ(Math.PI);
         if(this.pos.z < 0)
         {
             this.textCloud.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
-            //this.offset = new THREE.Vector3(-this.pos.x, this.pos.y, this.pos.z);
             this.offset = new THREE.Vector3(-(this.textCanvas.width/2 + this.pos.x), this.textCanvas.height/2 + this.pos.y, this.pos.z);
             
         }
         else{
-            //this.offset = new THREE.Vector3(this.pos.x, this.pos.y, this.pos.z);
             this.offset = new THREE.Vector3(this.textCanvas.width/2 + this.pos.x, this.textCanvas.height/2 + this.pos.y, this.pos.z);
         }
         this.textCloud.position.copy(this.offset);
@@ -122,11 +127,8 @@ export class SectionText
         const boxMat = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
         const boxGeo = new THREE.BoxGeometry(50, 50, 50);
         const cube = new THREE.Mesh(boxGeo, boxMat);
-        //cube.position.copy(this.offset);
         cube.position.copy(this.center);
-        //this.scene.add(cube);
         cube.lookAt(this.camera.position);
-        //console.log(this.cube.rotation);
         this.textCloud.rotation.x = cube.rotation.x;
         this.textCloud.rotation.z = cube.rotation.z;
         this.textCloud.rotation.y = cube.rotation.y;
@@ -136,10 +138,6 @@ export class SectionText
         this.boundingBox.setFromObject(this.textCloud);
         this.boundingBox.getCenter(this.center);
         cube.position.copy(this.textCloud.position);
-
-        //this.textCloud.rotateY(Math.PI);
-
-
         this.scene.add(this.textCloud);
         for(let i = 0; i < len; i++)
         {   
@@ -147,6 +145,49 @@ export class SectionText
         }
         this.boundingBox = new THREE.Box3();
         this.boundingBox.setFromObject(this.textCloud);
+        this.onScreen = false;
+        this.textReady = true;
+        this.textLen = len;
+    }
+
+    _positionText(len)
+    {
+        this.textCloud.rotateZ(Math.PI);
+        if(this.pos.z < 0)
+        {
+            this.textCloud.rotateOnAxis(new THREE.Vector3(0, 1, 0), Math.PI);
+            this.offset = new THREE.Vector3(-this.pos.x, this.pos.y, this.pos.z);
+            
+        }
+        else{
+            this.offset = new THREE.Vector3(this.pos.x, this.pos.y, this.pos.z);
+        }
+        this.textCloud.position.copy(this.offset);
+
+        this.boundingBox = new THREE.Box3();
+        this.boundingBox.setFromObject(this.textCloud);
+        this.center = new THREE.Vector3();
+        this.boundingBox.getCenter(this.center);
+        const boxMat = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+        const boxGeo = new THREE.BoxGeometry(10, 10, 10);
+        const cube = new THREE.Mesh(boxGeo, boxMat);
+        cube.position.copy(this.textCloud.position);
+        cube.lookAt(this.camera.position);
+        //this.scene.add(cube);
+        this.textCloud.setRotationFromQuaternion(cube.quaternion);
+        this.textCloud.rotateX(Math.PI);
+        this.textCloud.updateMatrixWorld();
+        this.boundingBox.setFromObject(this.textCloud);
+        this.boundingBox.getCenter(this.center);
+        this.cube = cube;
+        this.tempCamera = new THREE.PerspectiveCamera();
+        this.tempCamera.position.copy(this.camera.position);
+        this.tempCamera.lookAt(this.center);
+        this.scene.add(this.textCloud);
+        for(let i = 0; i < len; i++)
+        {   
+            this._textTwinkle(i);
+        }
         this.onScreen = false;
         this.textReady = true;
         this.textLen = len;
@@ -272,10 +313,9 @@ export class SectionText
         this.boundingBox.getCenter(w);
         //this.camPrevVector = v.clone();
         //this.camDirVector = w.clone().sub(v);
-        const tempCamera = new THREE.PerspectiveCamera();
-        tempCamera.position.copy(this.camera.position);
-        tempCamera.lookAt(w);
-        this.targetQuat = tempCamera.quaternion.clone();
+        //const tempCamera = new THREE.PerspectiveCamera();
+        //tempCamera.position.copy(this.camera.position);
+        this.targetQuat = this.tempCamera.quaternion.clone();
         this.origQuat = this.camera.quaternion.clone();
         let z = new THREE.Vector3(0, 0, 0);
         this.cameraTween = new TWEEN.Tween(z)
@@ -289,9 +329,10 @@ export class SectionText
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
-         this.scene.remove(this.textCloud);
-         //new PageText(this.main, 'prob not gonna work wait were so close omg this needs to be wrapped indefinitely because hey thats how it is you know anyways how is your day?', new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
-         new PageText(this.main, fileUrl, new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
+         if(Sections[this.textString][0] != undefined)
+         {
+            new PageText(this.main, Sections[this.textString][0], new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
+         }
          this.cameraTween = null;
         })
         .start();
