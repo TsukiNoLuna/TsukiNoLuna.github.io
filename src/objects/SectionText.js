@@ -381,6 +381,7 @@ export class SectionText
             if(raycaster.ray.intersectsBox(this.nextButton.boundingBox))
             {
                 this._nextPage();
+                //window.open(url, '_blank');
             }
             if(raycaster.ray.intersectsBox(this.prevButton.boundingBox))
             {
@@ -421,6 +422,7 @@ export class SectionText
     _nextPage()
     {
         this.loaded = false;
+        this.nextButton._twinkle();
         if(this.pageTexts.length == 1)
         {
             return;
@@ -433,6 +435,7 @@ export class SectionText
     _prevPage()
     {
         this.loaded = false;
+        this.prevButton._twinkle();
         if(this.pageTexts.length == 1)
         {
             return;

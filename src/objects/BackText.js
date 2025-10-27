@@ -3,7 +3,6 @@ import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import star from '../images/sp2.png';
 import { clamp } from 'three/src/math/MathUtils.js';
 
-
 export class BackText
 {
     constructor(main, rot)
@@ -15,7 +14,7 @@ export class BackText
         this.center = new THREE.Vector3();
         this.textString = '';
         this.fontName = 'Courier New';
-        this.fontSize = 40;
+        this.fontSize = 60;
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
@@ -76,14 +75,11 @@ export class BackText
                 for (let j = 0; j < this.textCanvas.width; j += samplingStep) {
                     // Checking if R-channel is not zero since the background RGBA is (0,0,0,0)
                     if (imageData.data[(j + i * this.textCanvas.width) * 4] > 0) {
-                        //this.textureCoordinates.push({x: j, y: i})
                         this.textPoints.push(new THREE.Vector3(j, i, 0));
                     }
                 }
             }
         }
-        //console.log(textPoints);
-        //this._generateText();
     }
 
     _generateText()
@@ -202,6 +198,7 @@ export class BackText
         })
         .start();
     }
+
 
     _remove()
     {

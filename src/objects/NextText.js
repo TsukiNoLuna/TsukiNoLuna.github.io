@@ -15,7 +15,7 @@ export class NextText
         this.center = new THREE.Vector3();
         this.textString = '';
         this.fontName = 'Courier New';
-        this.fontSize = 40;
+        this.fontSize = 60;
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
@@ -199,6 +199,23 @@ export class NextText
         {
             this.scene.remove(this.textCloud);
             this.fadeOutTween = null;
+        })
+        .start();
+    }
+
+    _twinkle()
+    {
+        let z = new THREE.Vector3(0, 0, 0);
+        this.twinkleTween = new TWEEN.Tween(z)
+        .to({x: 800}, 800)
+        .onUpdate(() => {
+            const val = Math.cos(this.twinkleTween._object.x * Math.PI * 2 / 800)/2 + 0.5;
+            this.textCloud.material.opacity = val;
+            this.textCloud.material.needsUpdate = true;
+        })
+        .onComplete(() =>
+        {
+            this.twinkleTween = null;
         })
         .start();
     }
