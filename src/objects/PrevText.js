@@ -168,7 +168,7 @@ export class PrevText
         this._onResize();
         let z = new THREE.Vector3(0, 0, 0);
         this.fadeInTween = new TWEEN.Tween(z)
-        .to({x: 1}, 3000)
+        .to({x: 1}, 1500)
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
@@ -185,7 +185,7 @@ export class PrevText
 
     _tweenOut()
     {
-        let z = new THREE.Vector3(1, 0, 0);
+        /*let z = new THREE.Vector3(1, 0, 0);
         this.fadeOutTween = new TWEEN.Tween(z)
         .to({x: 0}, 1000)
         .onUpdate(() => {
@@ -200,7 +200,13 @@ export class PrevText
             this.scene.remove(this.textCloud);
             this.fadeOutTween = null;
         })
-        .start();
+        .start();*/
+        for(let i = 0; i < this.textLen; i++)
+        {
+            this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, 0);
+        }
+        this.textCloud.geometry.getAttribute('color').needsUpdate = true;
+        this.scene.remove(this.textCloud);
     }
 
     _twinkle()
