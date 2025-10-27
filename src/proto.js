@@ -127,8 +127,7 @@ class Main
     this.loadButtonFPS = 2;
     this.loadFrameTime = 1 / this.loadButtonFPS;
     this.loadTimer = 0.5;
-    this.textReady = false;
-    //this.textTimer = 2.0;
+    this.currentSection = undefined;
     this.abortController = new AbortController();
     this.signal = this.abortController.signal;
     this._initScene();
@@ -152,6 +151,9 @@ class Main
     this.comets.forEach(currentValue => {
       currentValue._onResize();
     })
+    this.sectionTexts.forEach(currentValue => {
+      currentValue._onResize();
+    })
     console.log("resize");
   }
 
@@ -165,13 +167,19 @@ class Main
     const textobjects = this.sectionTexts.map((element) => {
       return element.boundingBox;
     });
+    if(this.currentSection != undefined)
+    {
+      //this.currentSection._nextPage();
+      this.currentSection._onPageClick(event, raycaster);
+    }
     for(let i = 0; i < this.sectionTexts.length; i++)
+    {
+      if(raycaster.ray.intersectsBox(textobjects[i]) && this.currentSection == undefined)
       {
-        if(raycaster.ray.intersectsBox(textobjects[i]))
-        {
-          this.sectionTexts[i]._onClick(event);
-        }
+        this.sectionTexts[i]._onInitClick(event);
       }
+    }
+
     
      
   }

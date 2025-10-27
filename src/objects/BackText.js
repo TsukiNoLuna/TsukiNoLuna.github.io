@@ -4,9 +4,9 @@ import star from '../images/sp2.png';
 import { clamp } from 'three/src/math/MathUtils.js';
 
 
-export class PageText
+export class BackText
 {
-    constructor(main, textFile, rot, image = undefined)
+    constructor(main, rot)
     {
         this.main = main;
         this.camera = main.camera;
@@ -19,52 +19,18 @@ export class PageText
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
-        this.image = image;
-        if(image == undefined)
-        {
-            this.hasImage = false;
-        }
-        else{
-            this.hasImage = true;
-        }
         this._setScreenPos();
         this.rot = rot;
-
-        fetch(textFile)
-        .then(r=>r.text())
-        .then(text =>
-        {
-            this.textString = text;
-            this._splitWords();
-            this._generateText();
-            if(this.hasImage)
-            {
-                this._generateImage();
-            }
-            //this._tweenIn();
-        })
-
+        this.textString = 'Back';
+        this._splitWords();
+        this._generateText();
     }
 
     _setScreenPos()
     {
         const depth = 0.9999;
-        if(!this.hasImage)
-        {
-            this.tL = new THREE.Vector3(-0.8, 0.8, depth);
-            this.bR = new THREE.Vector3(0.8, -0.8, depth);
-        }
-        else
-        {
-            this.tL = new THREE.Vector3(-0.8, 0.8, depth);
-            this.bR = new THREE.Vector3(-0.1, -0.8, depth);
-
-            this.imgTL = new THREE.Vector3(0.1, 0.8, depth);
-            this.imgBR = new THREE.Vector3(0.8, -0.8, depth);
-            this.imgTL.unproject(this.camera);
-            this.imgBR.unproject(this.camera);
-
-        }
+        this.tL = new THREE.Vector3(-0.9, 0.9, depth);
+        this.bR = new THREE.Vector3(-0.8, 0.8, depth);
         this.tL.unproject(this.camera);
         this.bR.unproject(this.camera);
         let right = new THREE.Vector3(1, 0, 0);
@@ -75,16 +41,6 @@ export class PageText
         dist.sub(this.tL);
         this.W = Math.abs(dist.dot(right));
         this.H = Math.abs(dist.dot(up));
-        if(this.hasImage)
-        {
-            dist = this.imgBR.clone();
-            dist.sub(this.imgTL);
-            this.imgW = Math.abs(dist.dot(right));
-            this.imgH = Math.abs(dist.dot(up));
-            this.imgPos = this.imgTL.clone();
-            this.imgPos.add(right.clone().multiplyScalar(dist.dot(right)/2));
-            this.imgPos.add(up.clone().multiplyScalar(dist.dot(up)/2));
-        } 
     }
     _splitWords()
     {
@@ -94,79 +50,21 @@ export class PageText
         this.textCanvas.height = this.H;
         this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
         this.textCtx.fillStyle = '#2a9d8f';
-        const text = 'Y';
-        let metrics = this.textCtx.measureText(text);
+        let metrics = this.textCtx.measureText(this.textString);
         this.lim = this.W / metrics.width;
         let height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
         height *= 2;
-        while(this.W * this.H / (metrics.width * (1.1 * height)) < len && this.fontSize != 1)
+        while((metrics.width > this.W || height > this.H) && this.fontSize != 1)
         {
             this.fontSize -= 1;
             this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
-            metrics = this.textCtx.measureText(text);
+            metrics = this.textCtx.measureText(this.textString);
             height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
             height *= 2;
             this.lim = this.W / metrics.width;
         }
-        let line = '    ';
-        let lineInd = 0;
-        this.words.forEach((word, index) => {
-            if(line.length + word.length >= this.lim)
-            {
-                this.textCtx.fillText(line, 0, (lineInd + .8) * height, this.W);
-                lineInd++;
-                line = '';
-            }
-            if(word == 'newline')
-            {
-                this.textCtx.fillText(line, 0, (lineInd + .8) * height, this.W);
-                lineInd += 2;
-                line = '    ';
-                return;
-            }
-            if(line && line != '    '){
-                line += ' ';
-            }
-            line += word;
-        });
-        this.textCtx.fillText(line, 0, (lineInd + .8) * height, this.W);
+        this.textCtx.fillText(this.textString, 0, .8 * height, this.W);
         this._sample_coordinates();
-    }
-
-    _sample_coordinatesOLD()
-    {
-        const lines = this.textString.split(`\n`);
-        const linesMaxLength = [...lines].sort((a, b) => b.length - a.length)[0].length;
-        const wTexture = this.fontSize * .7 * linesMaxLength;
-        const hTexture = lines.length * this.fontSize;
-        console.log(wTexture);
-        console.log(hTexture);
-        const linesNumber = lines.length;
-        this.textCanvas.width = wTexture;
-        this.textCanvas.height = hTexture;
-        console.log(hTexture);
-        this.textCtx.font = '100 ' + this.fontSize + 'px ' + this.fontName;
-        this.textCtx.fillStyle = '#2a9d8f';
-        this.textCtx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
-        for (let i = 0; i < linesNumber; i++) {
-            this.textCtx.fillText(lines[i], 0, (i + .8) * hTexture / linesNumber, wTexture);
-        }
-        let textPoints = [];
-        const samplingStep = 2;
-        if (wTexture > 0) {
-            const imageData = this.textCtx.getImageData(0, 0, this.textCanvas.width, this.textCanvas.height);
-            for (let i = 0; i < this.textCanvas.height; i += samplingStep) {
-                for (let j = 0; j < this.textCanvas.width; j += samplingStep) {
-                    // Checking if R-channel is not zero since the background RGBA is (0,0,0,0)
-                    if (imageData.data[(j + i * this.textCanvas.width) * 4] > 0) {
-                        //this.textureCoordinates.push({x: j, y: i})
-                        textPoints.push(new THREE.Vector3(j, i, 0));
-                    }
-                }
-            }
-        }
-        //console.log(textPoints);
-        this._generateText(textPoints);
     }
     _sample_coordinates()
     {
@@ -241,40 +139,12 @@ export class PageText
         this.textCloud.updateMatrixWorld();
         this.boundingBox.setFromObject(this.textCloud);
         this.boundingBox.getCenter(this.center);
+        this.boundingBox.expandByScalar(0.5);
         //this.scene.add(this.textCloud);
         this.boundingBox = new THREE.Box3();
         this.boundingBox.setFromObject(this.textCloud);
         this.textLen = len;
     }
-
-    _generateImage()
-    {
-        const geo = new THREE.PlaneGeometry(1, 1);
-        geo.center();
-        const texture = this.main.textureLoader.load(this.image);
-        const mat = new THREE.MeshBasicMaterial({
-            map: texture,
-            side: THREE.DoubleSide,
-            transparent: true,
-            depthWrite: false
-        });
-        mat.opacity = 0;
-        this.plane = new THREE.Mesh(geo, mat);
-        //this.scene.add(this.plane);
-        this._positionImage();
-    }
-    _positionImage()
-    {
-        this.plane.scale.set(this.imgW, this.imgH, 1);
-        this.plane.geometry.needsUpdate = true;
-        this.plane.position.copy(this.imgPos);
-        this.plane.rotation.x = this.rot.x;
-        this.plane.rotation.z = this.rot.z;
-        this.plane.rotation.y = this.rot.y;
-        this.plane.rotateX(Math.PI);
-        this.plane.updateMatrixWorld();
-    }
-
     _onResize()
     {
         this._setScreenPos();
@@ -287,10 +157,6 @@ export class PageText
         }
         this.textCloud.geometry.getAttribute('position').needsUpdate = true;
         this._positionText(len);
-        if(this.hasImage)
-        {
-            this._positionImage();
-        }
 
 
     }
@@ -299,31 +165,20 @@ export class PageText
     _tweenIn()
     {
         this.scene.add(this.textCloud);
-        if(this.hasImage)
-        {
-            this.scene.add(this.plane);
-        }
         this._onResize();
         let z = new THREE.Vector3(0, 0, 0);
         this.fadeInTween = new TWEEN.Tween(z)
-        .to({x: 1}, 1500)
+        .to({x: 1}, 3000)
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
                 this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
-            if(this.hasImage)
-            {
-                this.plane.material.opacity = this.fadeInTween._object.x;
-                this.plane.material.opacity = clamp(this.plane.material.opacity, 0, 0.8);
-                this.plane.material.needsUpdate = true;
-            }
         })
         .onComplete(() =>
         {
             this.fadeInTween = null;
-            this.main.currentSection.loaded = true;
         })
         .start();
     }
@@ -339,20 +194,10 @@ export class PageText
                 this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeOutTween._object.x);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
-            if(this.hasImage)
-            {
-                this.plane.material.opacity = this.fadeOutTween._object.x;
-                this.plane.material.opacity = clamp(this.plane.material.opacity, 0, 0.8);
-                this.plane.material.needsUpdate = true;
-            }
         })
         .onComplete(() =>
         {
             this.scene.remove(this.textCloud);
-            if(this.hasImage)
-            {
-                this.scene.remove(this.plane);
-            }
             this.fadeOutTween = null;
         })
         .start();

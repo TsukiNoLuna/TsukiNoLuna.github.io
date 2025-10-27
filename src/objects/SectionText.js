@@ -3,12 +3,18 @@ import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import { PageText } from './PageText';
 import star from '../images/sp2.png';
 import aboutMe from '../Text/AboutMe.txt'
+import aboutMeTest from '../Text/AboutMeTest.txt'
+import gameDev from '../Text/GameDev.txt'
+import gameDevImg from '../Text/GameDev.png'
+import { BackText } from './BackText';
+import { NextText } from './NextText';
+import { PrevText } from './PrevText';
 
 
 const Sections = {
-  "Luna Gary": [aboutMe, undefined],
-  "About Me": [aboutMe, undefined],
-  "Game Dev": [aboutMe, undefined]
+  "Luna Gary": [[aboutMeTest, undefined]],
+  "About Me": [[aboutMe, undefined]],
+  "Game Dev": [[gameDev, gameDevImg], [aboutMe, undefined]]
 };
 
 function wait(milliseconds) {
@@ -34,12 +40,29 @@ export class SectionText
         this.pos = pos;
         this.onScreenAngle = Math.PI/4;
         this.clicked = false;
+        this.loaded = true;
         const up = new THREE.Vector3(0, 1, 0);
         //this.pos.applyAxisAngle(up, angle);
         this.abortController = new AbortController();
         this.main = main;
         this.illuminated = false;
+        this.pageTexts = [];
+        this.ind = 0;
         this._sample_coordinates();
+        Sections[text].forEach(currentValue =>
+        {
+            this.pageTexts.push(new PageText(this.main, currentValue[0], this.textCloud.rotation, currentValue[1]));
+        }
+        );
+        this.hasMultiple = false;
+        if(this.pageTexts.length > 1)
+        {
+            this.nextButton = new NextText(this.main, this.textCloud.rotation);
+            this.prevButton = new PrevText(this.main, this.textCloud.rotation);
+            this.hasMultiple = true;
+        }
+        this.backButton = new BackText(this.main, this.textCloud.rotation);
+        
     }
     _sample_coordinates()
     {
@@ -91,7 +114,7 @@ export class SectionText
         textGeo.setAttribute('color', color);
         textGeo.center();
         textGeo.computeBoundingBox();
-        let sprite = new THREE.TextureLoader().load(star);
+        let sprite = this.main.textureLoader.load(star);
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
@@ -297,13 +320,15 @@ export class SectionText
         this.camera.getWorldDirection(z);
         //console.log(z);
     }
-    _onClick(event)
+    _onInitClick(event)
     {
-        if(!this.illuminated || this.clicked)
+        if(!this.illuminated || this.clicked || !this.loaded)
         {
             return;
         }
+        this.main.currentSection = this;
         this.clicked = true;
+        this.loaded = false;
         this.illuminated = false;
         this.main.controls.enabled = false;
         let v = new THREE.Vector3();
@@ -329,12 +354,103 @@ export class SectionText
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
-         if(Sections[this.textString][0] != undefined)
+         this.pageTexts[this.ind]._tweenIn();
+         this.backButton._tweenIn();
+         if(this.hasMultiple)
          {
-            new PageText(this.main, Sections[this.textString][0], new THREE.Vector2(-0.8, 0.8), new THREE.Vector2(0.8, -0.8), this.textCloud.rotation);
+            this.nextButton._tweenIn();
+            this.prevButton._tweenIn();
          }
          this.cameraTween = null;
         })
         .start();
+    }
+
+    _onPageClick(event, raycaster)
+    {
+        if(!this.loaded)
+        {
+            return;
+        }
+        if(raycaster.ray.intersectsBox(this.backButton.boundingBox))
+        {
+            this._zoomOut();
+        }
+        if(this.hasMultiple)
+        {
+            if(raycaster.ray.intersectsBox(this.nextButton.boundingBox))
+            {
+                this._nextPage();
+            }
+            if(raycaster.ray.intersectsBox(this.prevButton.boundingBox))
+            {
+                this._prevPage();
+            }
+        }
+    }
+    _zoomOut()
+    {
+        this.loaded = false;
+
+        this.pageTexts[this.ind]._tweenOut();
+        this.backButton._tweenOut();
+        if(this.hasMultiple)
+        {
+            this.nextButton._tweenOut();
+            this.prevButton._tweenOut();
+        }
+        let z = new THREE.Vector3(1, 0, 0);
+        this.cameraTween = new TWEEN.Tween(z)
+        .to({x: 0}, 1500)
+        .onUpdate(() => {
+         this.camera.zoom = 1 + this.cameraTween._object.x;
+         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
+         this.camera.updateProjectionMatrix();
+        })
+        .onComplete(() => {
+         this.clicked = false;
+         this.illuminated = true;
+         this.cameraTween = null;
+         this.main.controls.enabled = true;
+         this.main.currentSection = undefined;
+         this.loaded = true;
+        })
+        .start();
+    }
+
+    _nextPage()
+    {
+        this.loaded = false;
+        if(this.pageTexts.length == 1)
+        {
+            return;
+        }
+        this.pageTexts[this.ind]._tweenOut();
+        this.ind++;
+        this.ind %= this.pageTexts.length;
+        this.pageTexts[this.ind]._tweenIn();
+    }
+    _prevPage()
+    {
+        this.loaded = false;
+        if(this.pageTexts.length == 1)
+        {
+            return;
+        }
+        this.pageTexts[this.ind]._tweenOut();
+        this.ind--;
+        if(this.ind < 0)
+        {
+            this.ind = this.pageTexts.length - 1;
+        }
+        this.pageTexts[this.ind]._tweenIn();
+    }
+    _onResize()
+    {
+        this.pageTexts.forEach(currentValue =>
+        {
+            currentValue._onResize();
+        })
+        this.backButton._onResize();
     }
 }
