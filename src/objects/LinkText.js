@@ -2,20 +2,6 @@ import * as THREE from 'three';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import { PageText } from './PageText';
 import star from '../images/sp2.png';
-import aboutMe from '../Text/AboutMe.txt'
-import aboutMeTest from '../Text/AboutMeTest.txt'
-import gameDev from '../Text/GameDev.txt'
-import gameDevImg from '../Text/GameDev.png'
-import { BackText } from './BackText';
-import { NextText } from './NextText';
-import { PrevText } from './PrevText';
-
-
-const Sections = {
-  "Luna Gary": [[aboutMeTest, undefined]],
-  "About Me": [[aboutMe, undefined]],
-  "Game Dev": [[gameDev, gameDevImg], [aboutMe, undefined]]
-};
 
 function wait(milliseconds) {
   //simple sleep function
@@ -23,12 +9,12 @@ function wait(milliseconds) {
     setTimeout(resolve, milliseconds);
   });
 }
-
-export class SectionText
+export class LinkText
 {
-    constructor(main, text, pos, angle = 0)
+    constructor(main, text, pos, link, image = undefined, angle = 0)
     {
         this.textString = text;
+        this.link = link;
         this.fontName = 'Courier New';
         this.fontSize = 100;
         this.textCanvas = document.createElement('canvas');
@@ -48,21 +34,27 @@ export class SectionText
         this.illuminated = false;
         this.pageTexts = [];
         this.ind = 0;
-        this._sample_coordinates();
-        Sections[text].forEach(currentValue =>
+        this.ready = false;
+        if(image != undefined)
         {
-            this.pageTexts.push(new PageText(this.main, currentValue[0], this.textCloud.rotation, currentValue[1]));
+            this.image = new Image();
+            this.image.src = image;
+            this.hasImage = true;
         }
-        );
-        this.hasMultiple = false;
-        if(this.pageTexts.length > 1)
+        else{
+            this.hasImage = false;
+        }
+        if(this.hasImage)
         {
-            this.nextButton = new NextText(this.main, this.textCloud.rotation);
-            this.prevButton = new PrevText(this.main, this.textCloud.rotation);
-            this.hasMultiple = true;
+            //this._sample_coordinatesImage();
+            this.image.onload = () =>
+            {
+                this._sample_coordinatesImage();
+            };
         }
-        this.backButton = new BackText(this.main, this.textCloud.rotation);
-        
+        else{
+            this._sample_coordinates();
+        }
     }
     _sample_coordinates()
     {
@@ -88,6 +80,36 @@ export class SectionText
                 for (let j = 0; j < this.textCanvas.width; j += samplingStep) {
                     // Checking if R-channel is not zero since the background RGBA is (0,0,0,0)
                     if (imageData.data[(j + i * this.textCanvas.width) * 4] > 0) {
+                        //this.textureCoordinates.push({x: j, y: i})
+                        textPoints.push(new THREE.Vector3(j, i, 0));
+                    }
+                }
+            }
+        }
+        this._generateText(textPoints);
+    }
+
+    _sample_coordinatesImage()
+    {
+        this.textCanvas.width = 200;
+        this.textCanvas.height = 200;
+        this.textCtx.drawImage(this.image, 0, 0, this.textCanvas.width, this.textCanvas.height);
+        let textPoints = [];
+        const samplingStep = 8;
+        if (this.textCanvas.width > 0) {
+            const imageData = this.textCtx.getImageData(0, 0, this.textCanvas.width, this.textCanvas.height);
+            const pixels = imageData.data;
+            for (let i = 0; i < pixels.length; i += 4) {
+                const lightness = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3; // Average method
+                pixels[i] = lightness;     // Red
+                pixels[i + 1] = lightness; // Green
+                pixels[i + 2] = lightness; // Blue
+            }
+            this.textCtx.putImageData(imageData, 0, 0);
+            for (let i = 0; i < this.textCanvas.height; i += samplingStep) {
+                for (let j = 0; j < this.textCanvas.width; j += samplingStep) {
+                    // Checking if R-channel is not zero since the background RGBA is (0,0,0,0)
+                    if (imageData.data[(j + i * this.textCanvas.width) * 4] > 230) {
                         //this.textureCoordinates.push({x: j, y: i})
                         textPoints.push(new THREE.Vector3(j, i, 0));
                     }
@@ -152,7 +174,6 @@ export class SectionText
         const cube = new THREE.Mesh(boxGeo, boxMat);
         cube.position.copy(this.textCloud.position);
         cube.lookAt(this.camera.position);
-        //this.scene.add(cube);
         this.textCloud.setRotationFromQuaternion(cube.quaternion);
         this.textCloud.rotateX(Math.PI);
         this.textCloud.updateMatrixWorld();
@@ -168,7 +189,7 @@ export class SectionText
             this._textTwinkle(i);
         }
         this.onScreen = false;
-        this.textReady = true;
+        this.ready = true;
         this.textLen = len;
     }
 
@@ -239,16 +260,13 @@ export class SectionText
     }
     _onUpdate(delta)
     {
-        //console.log(this.textCloud.position.clone().project(this.camera));
-        let v = new THREE.Vector3();
-        let w = new THREE.Vector3();
-        //this.boundingBox.getCenter(v);
-        //v.copy(this.textCloud.position);
-        v.copy(this.center);
-        this.camera.getWorldDirection(w);
-        w.normalize();
-        //if(!this.clicked)
-        //{
+        if(this.ready)
+        {
+            let v = new THREE.Vector3();
+            let w = new THREE.Vector3();
+            v.copy(this.center);
+            this.camera.getWorldDirection(w);
+            w.normalize();
             if(this.onScreen && (this.main.currentSection != undefined && this.main.currentSection != this))
             {
                 this.onScreen = false;
@@ -284,10 +302,7 @@ export class SectionText
                     this._reverseTween(i);
                 }
             }
-        //}
-        let z = new THREE.Vector3();
-        this.camera.getWorldDirection(z);
-        //console.log(z);
+        }
     }
     _onInitClick(event)
     {
@@ -295,134 +310,10 @@ export class SectionText
         {
             return;
         }
-        this.main.currentSection = this;
-        this.clicked = true;
-        this.loaded = false;
-        this.illuminated = false;
-        this.main.controls.enabled = false;
-        let v = new THREE.Vector3();
-        this.camera.getWorldDirection(v);
-        v.add(this.camera.position);
-        let w = new THREE.Vector3();
-        this.boundingBox.getCenter(w);
-        //this.camPrevVector = v.clone();
-        //this.camDirVector = w.clone().sub(v);
-        //const tempCamera = new THREE.PerspectiveCamera();
-        //tempCamera.position.copy(this.camera.position);
-        this.targetQuat = this.tempCamera.quaternion.clone();
-        this.origQuat = this.camera.quaternion.clone();
-        let z = new THREE.Vector3(0, 0, 0);
-        this.cameraTween = new TWEEN.Tween(z)
-        .to({x: 1}, 1500)
-        .onUpdate(() => {
-         //this.camera.lookAt(this.camPrevVector.clone().add(this.camDirVector.clone().multiplyScalar(this.cameraTween._object.x)));
-         this.camera.quaternion.copy(this.origQuat);
-         this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
-         this.camera.zoom = 1 + this.cameraTween._object.x;
-         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
-         this.camera.updateProjectionMatrix();
-        })
-        .onComplete(() => {
-         this.pageTexts[this.ind]._tweenIn();
-         this.backButton._tweenIn();
-         if(this.hasMultiple)
-         {
-            this.nextButton._tweenIn();
-            this.prevButton._tweenIn();
-         }
-         this.cameraTween = null;
-        })
-        .start();
-    }
+        window.open(this.link, '_blank');
 
-    _onPageClick(event, raycaster)
-    {
-        if(!this.loaded)
-        {
-            return;
-        }
-        if(raycaster.ray.intersectsBox(this.backButton.boundingBox))
-        {
-            this._zoomOut();
-        }
-        if(this.hasMultiple)
-        {
-            if(raycaster.ray.intersectsBox(this.nextButton.boundingBox))
-            {
-                this._nextPage();
-                //window.open(url, '_blank');
-            }
-            if(raycaster.ray.intersectsBox(this.prevButton.boundingBox))
-            {
-                this._prevPage();
-            }
-        }
-    }
-    _zoomOut()
-    {
-        this.loaded = false;
-
-        this.pageTexts[this.ind]._tweenOut();
-        this.backButton._tweenOut();
-        if(this.hasMultiple)
-        {
-            this.nextButton._tweenOut();
-            this.prevButton._tweenOut();
-        }
-        let z = new THREE.Vector3(1, 0, 0);
-        this.cameraTween = new TWEEN.Tween(z)
-        .to({x: 0}, 1500)
-        .onUpdate(() => {
-         this.camera.zoom = 1 + this.cameraTween._object.x;
-         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
-         this.camera.updateProjectionMatrix();
-        })
-        .onComplete(() => {
-         this.clicked = false;
-         this.illuminated = true;
-         this.cameraTween = null;
-         this.main.controls.enabled = true;
-         this.main.currentSection = undefined;
-         this.loaded = true;
-        })
-        .start();
-    }
-
-    _nextPage()
-    {
-        this.loaded = false;
-        this.nextButton._twinkle();
-        if(this.pageTexts.length == 1)
-        {
-            return;
-        }
-        this.pageTexts[this.ind]._tweenOut();
-        this.ind++;
-        this.ind %= this.pageTexts.length;
-        this.pageTexts[this.ind]._tweenIn();
-    }
-    _prevPage()
-    {
-        this.loaded = false;
-        this.prevButton._twinkle();
-        if(this.pageTexts.length == 1)
-        {
-            return;
-        }
-        this.pageTexts[this.ind]._tweenOut();
-        this.ind--;
-        if(this.ind < 0)
-        {
-            this.ind = this.pageTexts.length - 1;
-        }
-        this.pageTexts[this.ind]._tweenIn();
     }
     _onResize()
     {
-        this.pageTexts.forEach(currentValue =>
-        {
-            currentValue._onResize();
-        })
-        this.backButton._onResize();
     }
 }

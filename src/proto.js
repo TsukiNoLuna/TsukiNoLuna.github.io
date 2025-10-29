@@ -29,6 +29,9 @@ import skySideTex1 from './images/Skybox_DRAFT_FGLayer.png';
 import skySideTex2 from './images/Skybox_DRAFT_BGLayer.png';
 import skyTopBotTexStr from './images/Skycylinder/MikuProCon_skycylinder_TOP.png';
 import skySideTexStr from './images/Skycylinder/MikuProCon_skycylinder_SIDESv07.png';
+import { LinkText } from './objects/LinkText';
+import githubImg from './images/logos/Github.png';
+import linkedInImg from './images/logos/Linkedin.png';
 
 
 
@@ -78,6 +81,18 @@ function getAnimationFrames(path, numFrames) {
       return path + frame + fileType;
   });
   return frameStrings;
+}
+
+
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onProgress = function(url, item, total){
+  console.log('loading');
+}
+
+loadingManager.onLoad = function(url, item, total){
+  console.log('done');
 }
 
 const songInfo = ["https://piapro.jp/t/ULcJ/20250205120202", 4694275, 2830730, 2946478, 67810, 20654, "ストリートライト / 加賀(ネギシャワーP)"];
@@ -217,7 +232,7 @@ class Main
 
     
     let sky_group = new THREE.Group();
-    let textureLoader = new THREE.TextureLoader();
+    let textureLoader = new THREE.TextureLoader(loadingManager);
 
     this.scene = scene;
     this.camera = camera;
@@ -229,7 +244,6 @@ class Main
     this.batchSystem = new BatchedRenderer();
     scene.add(this.batchSystem);
     //initialize environment elements
-    this._initLoadingButton();
     this._load_skybox();
     scene.add(this.skyGroup);
     this._initPostProcess();
@@ -242,13 +256,6 @@ class Main
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
     console.log("init");
-  }
-  _initLoadingButton()
-  {
-    const path = '/src/images/Buttons/Loading_Button/Loading_000';
-    this.loadButtonFrames = getAnimationFrames(path, 4);
-    this.loadButtonIndex = 3;
-
   }
   _initComets()
   {
@@ -432,21 +439,15 @@ class Main
 
   _initText()
   {
+    const github = 'https://github.com/TsukiNoLuna';
+    const linkedin = 'https://www.linkedin.com/in/luna-gary-09398835a';
+    const resume = 'https://drive.google.com/uc?export=download&id=1_ySCw0lObSI0zwVVqhwa3QXlx636hK86';
     this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'Game Dev', new THREE.Vector3(500, 500, -500)));
-
-    //new PageText(this, 'prob not gonna work', new Vector2(-0.1, 0.1), new Vector2(0.1, -0.1));
-    //this.sectionTexts.push(new SectionText(this, this.scene, this.camera, 'Luna Gary'));
-    /*this.fontName = 'Courier New';
-    this.textureFontSize = 100;
-    this.textString = 'Luna Gary';
-    this.textCanvas = document.createElement('canvas');
-    this.textCanvas.style.textAlign = 'center';
-    this.textCtx = this.textCanvas.getContext('2d');
-    //document.body.appendChild(this.textCanvas);
-    this._sampleCoordinates();*/
-
+    this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
+    this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, -Math.PI/2));
+    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI/2));
     
   }
 
@@ -483,18 +484,6 @@ class Main
     this.animations.forEach(anim => {
       anim.update(delta);
     });
-    //check for end of song
-    if(!this.ready)
-    {
-      this.loadTimer += delta;
-      if(this.loadTimer >= this.loadFrameTime)
-      {
-        this.loadTimer = 0;
-        this.loadButtonIndex++;
-        this.loadButtonIndex %= this.loadButtonFrames.length;
-        //document.getElementById("loadingbtn").src=this.loadButtonFrames[this.loadButtonIndex];
-      }
-    }
     
     this.sectionTexts.forEach(currentValue => {
       currentValue._onUpdate();

@@ -15,6 +15,7 @@ export class BackText
         this.textString = '';
         this.fontName = 'Courier New';
         this.fontSize = 60;
+        this.maxFontSize = 60;
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
@@ -143,13 +144,30 @@ export class BackText
     }
     _onResize()
     {
+        this.fontSize = this.maxFontSize;
+        const opac = this.textCloud.geometry.getAttribute('color').getW(0);
         this._setScreenPos();
         this.textCtx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
         this._splitWords();
         const len = this.textPoints.length;
-        for(let i = 0; i < len; i++)
+        if(len != this.textLen)
         {
-            this.textCloud.geometry.getAttribute('position').setXYZ( i, this.textPoints[i].x, this.textPoints[i].y, this.textPoints[i].z );
+            let position = new THREE.BufferAttribute( new Float32Array(len*3), 3);
+            let color = new THREE.BufferAttribute( new Float32Array(len*4), 4);
+            for(let i = 0; i < len; i++)
+            {
+                position.setXYZ( i, this.textPoints[i].x, this.textPoints[i].y, this.textPoints[i].z );
+                color.setXYZW( i, 1, 1, 1, opac);
+            }
+            this.textCloud.geometry.setAttribute('position', position);
+            this.textCloud.geometry.setAttribute('color', color);
+            this.textCloud.geometry.getAttribute('color').needsUpdate = true;
+        }
+        else{
+            for(let i = 0; i < len; i++)
+            {
+                this.textCloud.geometry.getAttribute('position').setXYZ( i, this.textPoints[i].x, this.textPoints[i].y, this.textPoints[i].z );
+            }
         }
         this.textCloud.geometry.getAttribute('position').needsUpdate = true;
         this._positionText(len);
