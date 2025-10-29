@@ -29,31 +29,30 @@ html, body {
     z-index: 2;
 }
 
-#Buttons{
+.progress-bar-container
+{
     position: absolute;
-    left: 10px;
-    bottom: 10px;
-    width: 20%;
-    z-index: 3;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(4, 26, 64, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
 }
-#Buttons #playbtn{
-    width: 50%;
-    height: 50%;
-    display: none;
-}
-#Buttons #pausebtn{
-    width: 50%;
-    height: 50%;
-    display: none;
-}
-#Buttons #loadingbtn
+
+#progress-bar
 {
-    width: 50%;
-    height: 50%;
+    width: 30%;
+    margin-top: 0.5%;
+    height: 2%;
 }
-#Buttons #restartbtn
+
+label
 {
-    max-width: 40%;
-    max-height: 40%;
-    display: none;
+    color: black;
+    font-size: 2rem;
 }

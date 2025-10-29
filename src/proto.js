@@ -86,14 +86,22 @@ function getAnimationFrames(path, numFrames) {
 
 
 const loadingManager = new THREE.LoadingManager();
-
-loadingManager.onProgress = function(url, item, total){
-  console.log('loading');
+let rendererO;
+let loadingInd = 0;
+const progressBar = document.getElementById('progress-bar');
+loadingManager.onProgress = function(url, loaded, total){
+  progressBar.value = (loaded/total) * 100;
 }
 
 loadingManager.onLoad = function(url, item, total){
-  console.log('done');
+  //console.log('done');
+  loadingInd++;
+  //if(loadingInd == 3)
+  //{
+    document.getElementById("view").appendChild(rendererO.domElement);
+  //}
 }
+
 
 const songInfo = ["https://piapro.jp/t/ULcJ/20250205120202", 4694275, 2830730, 2946478, 67810, 20654, "ストリートライト / 加賀(ネギシャワーP)"];
 class Main
@@ -218,7 +226,7 @@ class Main
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize( w, h );
     //renderer.toneMapping = THREE.NoToneMapping;
-    document.getElementById("view").appendChild(renderer.domElement);
+    //document.getElementById("view").appendChild(renderer.domElement);
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.enableZoom = false;
@@ -237,6 +245,7 @@ class Main
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
+    rendererO = renderer;
     this.controls = controls;
     this.skyGroup = sky_group;
     this.textureLoader = textureLoader;
@@ -365,6 +374,7 @@ class Main
     const skyGeo = new THREE.CylinderGeometry(skyHeight * skyFactor, skyHeight * skyFactor, skyHeight, 10000);
     const skyCylinder = new THREE.Mesh(skyGeo, skyMats);
     skyCylinder.position.y += 6000;
+    skyCylinder.rotateY(Math.PI);
     this.skyGroup.add(skyCylinder);
     
     //similar process for city skyline
