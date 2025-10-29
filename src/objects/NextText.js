@@ -140,7 +140,7 @@ export class NextText
         this.textCloud.updateMatrixWorld();
         this.boundingBox.setFromObject(this.textCloud);
         this.boundingBox.getCenter(this.center);
-        this.boundingBox.expandByScalar(0.5);
+        this.boundingBox.expandByScalar(2);
         //this.scene.add(this.textCloud);
         this.boundingBox = new THREE.Box3();
         this.boundingBox.setFromObject(this.textCloud);

@@ -185,6 +185,7 @@ class Main
   {
     if(doneLoading && !this.hasInit)
     {
+      this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
     }
     const raycaster = new THREE.Raycaster();
@@ -493,16 +494,13 @@ class Main
     this.shootingStars.forEach(currentValue => {
       currentValue._update(delta);
     })
-    this.comets.forEach(currentValue => {
-      currentValue._update(delta, this.player.isPlaying);
-    })
-    this.animations.forEach(anim => {
-      anim.update(delta);
-    });
     
-    this.sectionTexts.forEach(currentValue => {
-      currentValue._onUpdate();
-    })
+    if(this.hasInit)
+    {
+      this.sectionTexts.forEach(currentValue => {
+        currentValue._onUpdate();
+      })
+    }
 
     this.postProcess.render();
   }
