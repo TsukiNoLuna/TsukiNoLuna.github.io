@@ -88,7 +88,9 @@ function getAnimationFrames(path, numFrames) {
 const loadingManager = new THREE.LoadingManager();
 let rendererO;
 let loadingInd = 0;
+let doneLoading = false;
 const progressBar = document.getElementById('progress-bar');
+const label = document.getElementById('bar-label');
 loadingManager.onProgress = function(url, loaded, total){
   progressBar.value = (loaded/total) * 100;
 }
@@ -96,10 +98,8 @@ loadingManager.onProgress = function(url, loaded, total){
 loadingManager.onLoad = function(url, item, total){
   //console.log('done');
   loadingInd++;
-  //if(loadingInd == 3)
-  //{
-    document.getElementById("view").appendChild(rendererO.domElement);
-  //}
+    label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
+    doneLoading = true;
 }
 
 
@@ -153,6 +153,7 @@ class Main
     this.currentSection = undefined;
     this.abortController = new AbortController();
     this.signal = this.abortController.signal;
+    this.hasInit = false;
     this._initScene();
     this._update();
 
@@ -182,6 +183,10 @@ class Main
 
   _onClick(event)
   {
+    if(doneLoading && !this.hasInit)
+    {
+      document.getElementById("view").appendChild(this.renderer.domElement);
+    }
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
