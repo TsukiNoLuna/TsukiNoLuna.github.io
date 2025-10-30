@@ -22,7 +22,7 @@ const aWU6SLink = 'https://magicalmirai.com/2025/procon/entry.html#entry_no10';
 const Sections = {
   "Luna Gary": [[lunaGary, undefined]],
   "About Me": [[aboutMe, undefined]],
-  "Projects": [[gameDev, gameDevImg, gameDevLink], [numbra, numbraImg, numbraLink], [aWU6S, aWU6SImg, aWU6SLink]]
+  "Projects": [[gameDev, gameDevImg, gameDevLink], [aWU6S, aWU6SImg, aWU6SLink], [numbra, numbraImg, numbraLink]]
 };
 
 function wait(milliseconds) {
