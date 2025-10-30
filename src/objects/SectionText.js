@@ -2,19 +2,27 @@ import * as THREE from 'three';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
 import { PageText } from './PageText';
 import star from '../images/sp2.png';
-import aboutMe from '../Text/AboutMe.txt'
-import aboutMeTest from '../Text/AboutMeTest.txt'
-import gameDev from '../Text/GameDev.txt'
-import gameDevImg from '../Text/GameDev.png'
+import aboutMe from '../Text/AboutMe.txt';
+import aboutMeTest from '../Text/AboutMeTest.txt';
+import lunaGary from '../Text/LunaGary.txt';
+import gameDev from '../Text/GameDev.txt';
+import gameDevImg from '../Text/GameDev.png';
+import aWU6S from '../Text/AWU6S.txt';
+import aWU6SImg from '../Text/AWU6S.png';
+import numbra from '../Text/Numbra.txt';
+import numbraImg from '../Text/Numbra.png';
 import { BackText } from './BackText';
 import { NextText } from './NextText';
 import { PrevText } from './PrevText';
 
 
+const gameDevLink = '';
+const numbraLink = 'https://artemisiaexists.itch.io/numbra';
+const aWU6SLink = 'https://magicalmirai.com/2025/procon/entry.html#entry_no10';
 const Sections = {
-  "Luna Gary": [[aboutMeTest, undefined]],
+  "Luna Gary": [[lunaGary, undefined]],
   "About Me": [[aboutMe, undefined]],
-  "Game Dev": [[gameDev, gameDevImg], [aboutMe, undefined]]
+  "Projects": [[gameDev, gameDevImg, gameDevLink], [numbra, numbraImg, numbraLink], [aWU6S, aWU6SImg, aWU6SLink]]
 };
 
 function wait(milliseconds) {
@@ -344,17 +352,28 @@ export class SectionText
         if(raycaster.ray.intersectsBox(this.backButton.boundingBox))
         {
             this._zoomOut();
+            return;
         }
         if(this.hasMultiple)
         {
             if(raycaster.ray.intersectsBox(this.nextButton.boundingBox))
             {
                 this._nextPage();
-                //window.open(url, '_blank');
+                return;
             }
             if(raycaster.ray.intersectsBox(this.prevButton.boundingBox))
             {
                 this._prevPage();
+                return;
+            }
+        }
+        if(this.pageTexts[this.ind].hasImage)
+        {
+            if(raycaster.ray.intersectsBox(this.pageTexts[this.ind].planeBB))
+            {
+                //console.log('here');
+                //console.log(Sections[this.textString][this.ind][2]);
+                window.open(Sections[this.textString][this.ind][2], '_blank');
             }
         }
     }
@@ -424,5 +443,10 @@ export class SectionText
             currentValue._onResize();
         })
         this.backButton._onResize();
+        if(this.hasMultiple)
+        {
+            this.nextButton._onResize();
+            this.prevButton._onResize();
+        }
     }
 }

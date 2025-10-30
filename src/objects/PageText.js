@@ -12,6 +12,7 @@ export class PageText
         this.camera = main.camera;
         this.scene = main.scene;
         this.boundingBox = new THREE.Box3();
+        this.planeBB = new THREE.Box3();
         this.center = new THREE.Vector3();
         this.textString = '';
         this.fontName = 'Courier New';
@@ -82,6 +83,7 @@ export class PageText
             dist.sub(this.imgTL);
             this.imgW = Math.abs(dist.dot(right));
             this.imgH = Math.abs(dist.dot(up));
+            this.imgH = 9 * this.imgW /16;
             this.imgPos = this.imgTL.clone();
             this.imgPos.add(right.clone().multiplyScalar(dist.dot(right)/2));
             this.imgPos.add(up.clone().multiplyScalar(dist.dot(up)/2));
@@ -172,7 +174,7 @@ export class PageText
     _sample_coordinates()
     {
         this.textPoints = [];
-        const samplingStep = 2;
+        const samplingStep = 1;
         if (this.W > 0) {
             const imageData = this.textCtx.getImageData(0, 0, this.textCanvas.width, this.textCanvas.height);
             for (let i = 0; i < this.textCanvas.height; i += samplingStep) {
@@ -209,7 +211,7 @@ export class PageText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size: 30,
+                size: 25,
                 sizeAttenuation: true,
                 map: sprite,
                 transparent: true,
@@ -274,6 +276,7 @@ export class PageText
         this.plane.rotation.y = this.rot.y;
         this.plane.rotateX(Math.PI);
         this.plane.updateMatrixWorld();
+        this.planeBB.setFromObject(this.plane);
     }
 
     _onResize()
@@ -328,13 +331,12 @@ export class PageText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.7);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
             if(this.hasImage)
             {
-                this.plane.material.opacity = this.fadeInTween._object.x;
-                this.plane.material.opacity = clamp(this.plane.material.opacity, 0, 0.8);
+                this.plane.material.opacity = this.fadeInTween._object.x * 0.8;
                 this.plane.material.needsUpdate = true;
             }
         })
@@ -359,8 +361,7 @@ export class PageText
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
             if(this.hasImage)
             {
-                this.plane.material.opacity = this.fadeOutTween._object.x;
-                this.plane.material.opacity = clamp(this.plane.material.opacity, 0, 0.8);
+                this.plane.material.opacity = this.fadeOutTween._object.x * 0.8;
                 this.plane.material.needsUpdate = true;
             }
         })

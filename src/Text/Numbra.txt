@@ -1,0 +1,1 @@
+Numbra is a first person puzzle game based on shadows and light. Figure out the mystery behind the distorted physics, and use that to reach the end of each puzzle.  Created with a team of USC students for the 2025 Epic MegaJam.

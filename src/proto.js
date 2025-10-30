@@ -365,8 +365,8 @@ class Main
     skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
     skySideTex.colorSpace = THREE.SRGBColorSpace;
     //create material for each face of skybox (cylinder)
-    const skyTopMat = new THREE.MeshBasicMaterial({ map : skyTopBotTex, side:THREE.BackSide, transparent: true });
-    const skySideMat = new THREE.MeshBasicMaterial({ map : skySideTex, side:THREE.BackSide, transparent: true });
+    const skyTopMat = new THREE.MeshBasicMaterial({ map : skyTopBotTex, side:THREE.BackSide, transparent: true, sizeAttenuation: true});
+    const skySideMat = new THREE.MeshBasicMaterial({ map : skySideTex, side:THREE.BackSide, transparent: true, sizeAttenuation: true});
     const skyBotMat = skyTopMat.clone();
     const skyMats = [
       skySideMat,
@@ -393,22 +393,26 @@ class Main
     const topMat = new THREE.MeshBasicMaterial({
       map: topTex,
       transparent: true,
-      side: THREE.BackSide
+      side: THREE.BackSide,
+      sizeAttenuation: true
     });
     const botMat = new THREE.MeshBasicMaterial({
       map: botTex,
       transparent: true,
-      side: THREE.BackSide
+      side: THREE.BackSide,
+      sizeAttenuation: true
     });
     const sideMat = new THREE.MeshBasicMaterial({
       map: sideTex,
       transparent: true,
-      side: THREE.BackSide
+      side: THREE.BackSide,
+      sizeAttenuation: true
     });
     const sideMat2 = new THREE.MeshBasicMaterial({
       map: sideTex2,
       transparent: true,
-      side: THREE.BackSide
+      side: THREE.BackSide,
+      sizeAttenuation: true
     });
     const materials = [
       sideMat,
@@ -436,20 +440,6 @@ class Main
 
     this.skyGroup.add(cylinder);
     this.skyGroup.add(cylinder2);
-    //this._initAnimations();
-
-  }
-  _initAnimations()
-  {
-    //create meshes with animated vocaloids
-    //this.animations.push(new AnimatedMesh("Miku", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Rin", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Len", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Kagamine", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Luka", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Meiko", 100, 6, 6, this.scene));
-    //this.animations.push(new AnimatedMesh("Kaito", 100, 6, 6, this.scene));
- 
 
   }
 
@@ -460,7 +450,7 @@ class Main
     const resume = 'https://drive.google.com/uc?export=download&id=1_ySCw0lObSI0zwVVqhwa3QXlx636hK86';
     this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
-    this.sectionTexts.push(new SectionText(this, 'Game Dev', new THREE.Vector3(500, 500, -500)));
+    this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, -Math.PI/2));
     this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI/2));
