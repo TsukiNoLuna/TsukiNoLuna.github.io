@@ -169,6 +169,7 @@ class Main
     this.camera.aspect = w/h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
+    this.postProcess.setSize(w, h);
     this.shootingStars.forEach(currentValue => {
       currentValue._onResize();
     })
@@ -286,6 +287,7 @@ class Main
   {
     //initiate post processing effects
     const postProcess = new EffectComposer(this.renderer);
+    postProcess.setSize(this.screenW, this.screenH);
     postProcess.addPass(new RenderPass(this.scene, this.camera));
     postProcess.addPass(new EffectPass(this.camera, new ChromaticAberrationEffect({
       offset: new THREE.Vector2(0.001, 0.001),
@@ -365,8 +367,8 @@ class Main
     skyTopBotTex.colorSpace = THREE.SRGBColorSpace;
     skySideTex.colorSpace = THREE.SRGBColorSpace;
     //create material for each face of skybox (cylinder)
-    const skyTopMat = new THREE.MeshBasicMaterial({ map : skyTopBotTex, side:THREE.BackSide, transparent: true, sizeAttenuation: true});
-    const skySideMat = new THREE.MeshBasicMaterial({ map : skySideTex, side:THREE.BackSide, transparent: true, sizeAttenuation: true});
+    const skyTopMat = new THREE.MeshBasicMaterial({ map : skyTopBotTex, side:THREE.BackSide, transparent: true});
+    const skySideMat = new THREE.MeshBasicMaterial({ map : skySideTex, side:THREE.BackSide, transparent: true});
     const skyBotMat = skyTopMat.clone();
     const skyMats = [
       skySideMat,
@@ -393,26 +395,22 @@ class Main
     const topMat = new THREE.MeshBasicMaterial({
       map: topTex,
       transparent: true,
-      side: THREE.BackSide,
-      sizeAttenuation: true
+      side: THREE.BackSide
     });
     const botMat = new THREE.MeshBasicMaterial({
       map: botTex,
       transparent: true,
-      side: THREE.BackSide,
-      sizeAttenuation: true
+      side: THREE.BackSide
     });
     const sideMat = new THREE.MeshBasicMaterial({
       map: sideTex,
       transparent: true,
-      side: THREE.BackSide,
-      sizeAttenuation: true
+      side: THREE.BackSide
     });
     const sideMat2 = new THREE.MeshBasicMaterial({
       map: sideTex2,
       transparent: true,
-      side: THREE.BackSide,
-      sizeAttenuation: true
+      side: THREE.BackSide
     });
     const materials = [
       sideMat,
@@ -452,7 +450,7 @@ class Main
     this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
-    this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, -Math.PI/2));
+    this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
     this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI/2));
     
   }

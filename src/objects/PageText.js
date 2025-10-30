@@ -123,7 +123,7 @@ export class PageText
             if(word == 'newline')
             {
                 this.textCtx.fillText(line, 0, (lineInd + .8) * height, this.W);
-                lineInd += 2;
+                lineInd += 1.5;
                 line = '    ';
                 return;
             }
