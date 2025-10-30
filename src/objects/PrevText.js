@@ -70,7 +70,7 @@ export class PrevText
     _sample_coordinates()
     {
         this.textPoints = [];
-        const samplingStep = 2;
+        const samplingStep = 1;
         if (this.W > 0) {
             const imageData = this.textCtx.getImageData(0, 0, this.textCanvas.width, this.textCanvas.height);
             for (let i = 0; i < this.textCanvas.height; i += samplingStep) {
@@ -107,7 +107,7 @@ export class PrevText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size: 30,
+                size: 25,
                 sizeAttenuation: true,
                 map: sprite,
                 transparent: true,
@@ -190,7 +190,7 @@ export class PrevText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.5);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
         })

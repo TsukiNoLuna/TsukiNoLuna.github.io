@@ -331,7 +331,7 @@ export class PageText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.7);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.5);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
             if(this.hasImage)
