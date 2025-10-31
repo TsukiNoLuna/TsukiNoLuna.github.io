@@ -163,8 +163,8 @@ class Main
   _onResize()
   {
     //change width and height on necessary elements
-    let w = window.innerWidth;
-    let h = window.innerHeight;
+    let w = Math.round(window.innerWidth);
+    let h = Math.round(window.innerHeight);
     this.screenW = w;
     this.screenH = h;
     this.camera.aspect = w/h;
@@ -189,6 +189,7 @@ class Main
     {
       this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
+      this._onResize();
     }
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -220,8 +221,8 @@ class Main
     //Init scene, camera, controls, and renderer
     //let w = document.documentElement.clientWidth;
     //let h = document.documentElement.clientHeight;
-    let w = window.innerWidth;
-    let h = window.innerHeight;
+    let w = Math.round(window.innerWidth);
+    let h = Math.round(window.innerHeight);
     this.screenW = w;
     this.screenH = h;
     let scene = new THREE.Scene();
