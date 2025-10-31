@@ -162,8 +162,8 @@ class Main
   _onResize()
   {
     //change width and height on necessary elements
-    let w = document.documentElement.clientWidth;
-    let h = document.documentElement.clientHeight;
+    let w = window.innerWidth;
+    let h = window.innerHeight;
     this.screenW = w;
     this.screenH = h;
     this.camera.aspect = w/h;
@@ -217,8 +217,10 @@ class Main
   _initScene()
   {
     //Init scene, camera, controls, and renderer
-    let w = document.documentElement.clientWidth;
-    let h = document.documentElement.clientHeight;
+    //let w = document.documentElement.clientWidth;
+    //let h = document.documentElement.clientHeight;
+    let w = window.innerWidth;
+    let h = window.innerHeight;
     this.screenW = w;
     this.screenH = h;
     let scene = new THREE.Scene();
@@ -491,6 +493,7 @@ class Main
     }
 
     this.postProcess.render();
+    //this.renderer.render(this.scene, this.camera);
   }
 
 }
