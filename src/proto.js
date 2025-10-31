@@ -123,9 +123,10 @@ class Main
     this.minTwinkleTime = 1000;
     this.textMinTwinkleTime = 2000;
     this.twinkleTimeRange = 3000;
+    //this.textTwinkleTimeRange = 4000;
     this.textTwinkleTimeRange = 3000;
     //this.twinkleDelayRange = 1500;
-    this.twinkleDelayRange = 1000;
+    this.twinkleDelayRange = 1300;
     this.shootingStars = [];
     this.animatedStars = [];
     this.sectionTexts = [];
@@ -275,6 +276,7 @@ class Main
     let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
+    this.camera.lookAt(this.sectionTexts[0].textCloud);
     console.log("init");
   }
   _initPostProcess()
