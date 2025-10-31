@@ -30,8 +30,8 @@ export class PrevText
     _setScreenPos()
     {
         const depth = 0.9999;
-        this.tL = new THREE.Vector3(-0.95, 0.1, depth);
-        this.bR = new THREE.Vector3(-0.8, -0.1, depth);
+        this.tL = new THREE.Vector3(-0.98, 0.1, depth);
+        this.bR = new THREE.Vector3(-0.83, -0.1, depth);
         this.tL.unproject(this.camera);
         this.bR.unproject(this.camera);
         let right = new THREE.Vector3(1, 0, 0);

@@ -125,7 +125,7 @@ class Main
     this.textMinTwinkleTime = 2000;
     this.twinkleTimeRange = 3000;
     this.textTwinkleTimeRange = 4000;
-    this.twinkleDelayRange = 2000;
+    this.twinkleDelayRange = 1500;
     this.shootingStars = [];
     this.animatedStars = [];
     this.sectionTexts = [];
