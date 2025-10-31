@@ -49,13 +49,13 @@ export class SectionText
         const up = new THREE.Vector3(0, 1, 0);
         this.pos.applyAxisAngle(up, angle);
         //this.onScreenAngle = Math.PI/4;
-        this.onScreenAngle = Math.PI/8;
+        this.onScreenAngle = Math.PI/6;
         this.clicked = false;
         this.loaded = true;
         this.abortController = new AbortController();
         this.main = main;
         this.illuminated = false;
-        this.zoomInTime = 1000;
+        this.zoomInTime = 1200;
         this.pageTexts = [];
         this.ind = 0;
         this._sample_coordinates();
