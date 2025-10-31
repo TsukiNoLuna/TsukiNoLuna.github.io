@@ -135,6 +135,7 @@ class Main
     this.starTimer = 0;
     //this.minPolarAngle = 2.15;
     this.minPolarAngle = 2;
+    this.startingPolarAngle = 2.15;
     this.polarAngleCutoff = 0.4;
     //this.initialZoom = 1;
     this.initialZoom = 1.3;

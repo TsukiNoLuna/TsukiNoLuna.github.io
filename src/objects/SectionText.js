@@ -49,7 +49,7 @@ export class SectionText
         const up = new THREE.Vector3(0, 1, 0);
         this.pos.applyAxisAngle(up, angle);
         //this.onScreenAngle = Math.PI/4;
-        this.onScreenAngle = Math.PI/6;
+        this.onScreenAngle = Math.PI/8;
         this.clicked = false;
         this.loaded = true;
         this.abortController = new AbortController();
