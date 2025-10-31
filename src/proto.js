@@ -116,8 +116,6 @@ class Main
     this.vertRotRange = Math.PI/14;
     this.minDist = 20;
     this.collisionRadius = 6;
-    this.lyricHorizontalDistanceRatio = 10;
-    this.lyricVerticalDistanceRatio = 8;
     this.starAmount = 600;
     this.starMinDist = 10;
     this.starDistRange = 50;
@@ -126,6 +124,7 @@ class Main
     this.textMinTwinkleTime = 2000;
     this.twinkleTimeRange = 3000;
     this.textTwinkleTimeRange = 4000;
+    //this.twinkleDelayRange = 1500;
     this.twinkleDelayRange = 1500;
     this.shootingStars = [];
     this.animatedStars = [];
@@ -134,13 +133,13 @@ class Main
     this.shootingStarSpawnTime = 8;
     this.shootingStarSpawnChance = 0.8;
     this.starTimer = 0;
-    this.minPolarAngle = 2.15;
+    //this.minPolarAngle = 2.15;
+    this.minPolarAngle = 2;
     this.polarAngleCutoff = 0.4;
-    this.lineFadeOutTime = 1000;
-    this.maxLineFadeInTime = 1500;
-    this.lyricFadeInTime = 300;
-    this.lyricFadeInDist = 1.5;
-    this.lyricEraseCutoff = 2000;
+    //this.initialZoom = 1;
+    this.initialZoom = 1.3;
+    this.maxZoom = 2;
+    this.zoomFactor = this.maxZoom - this.initialZoom;
     this.erasingSprite = undefined;
     this.sprites = [];
     this.spriteCollision = [];
@@ -243,6 +242,7 @@ class Main
     controls.enableZoom = false;
     controls.minPolarAngle = this.minPolarAngle;
     camera.position.set(0.0, 0.0, -0.01);
+    camera.zoom = this.initialZoom;
 
     const amb_light = new THREE.AmbientLight(0x909090);
     //scene.add(amb_light);
@@ -443,7 +443,7 @@ class Main
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
-    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI/2));
+    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 700, 1000), resume, undefined, Math.PI + 1));
     this.sectionTexts.push(new LinkText(this, 'Luna', new THREE.Vector3(0, 2500, 1000), '', lunaImg));
     
   }

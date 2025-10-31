@@ -48,12 +48,14 @@ export class SectionText
         this.pos = pos;
         const up = new THREE.Vector3(0, 1, 0);
         this.pos.applyAxisAngle(up, angle);
-        this.onScreenAngle = Math.PI/4;
+        //this.onScreenAngle = Math.PI/4;
+        this.onScreenAngle = Math.PI/8;
         this.clicked = false;
         this.loaded = true;
         this.abortController = new AbortController();
         this.main = main;
         this.illuminated = false;
+        this.zoomInTime = 1000;
         this.pageTexts = [];
         this.ind = 0;
         this._sample_coordinates();
@@ -321,12 +323,12 @@ export class SectionText
         this.origQuat = this.camera.quaternion.clone();
         let z = new THREE.Vector3(0, 0, 0);
         this.cameraTween = new TWEEN.Tween(z)
-        .to({x: 1}, 1500)
+        .to({x: 1}, this.zoomInTime)
         .onUpdate(() => {
          //this.camera.lookAt(this.camPrevVector.clone().add(this.camDirVector.clone().multiplyScalar(this.cameraTween._object.x)));
          this.camera.quaternion.copy(this.origQuat);
          this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
-         this.camera.zoom = 1 + this.cameraTween._object.x;
+         this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
          this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
          this.camera.updateProjectionMatrix();
         })
@@ -390,9 +392,9 @@ export class SectionText
         }
         let z = new THREE.Vector3(1, 0, 0);
         this.cameraTween = new TWEEN.Tween(z)
-        .to({x: 0}, 1500)
+        .to({x: 0}, this.zoomInTime)
         .onUpdate(() => {
-         this.camera.zoom = 1 + this.cameraTween._object.x;
+         this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
          this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
          this.camera.updateProjectionMatrix();
         })
