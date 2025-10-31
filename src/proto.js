@@ -96,9 +96,11 @@ loadingManager.onProgress = function(url, loaded, total){
   progressBar.value = (loaded/total) * 100;
 }
 
-loadingManager.onLoad = function(url, item, total){
+loadingManager.onLoad = async function(url, item, total){
   //console.log('done');
-  loadingInd++;
+    label.textContent = 'Almost there...';
+    await wait(1000);
+    loadingInd++;
     label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
     doneLoading = true;
 }
