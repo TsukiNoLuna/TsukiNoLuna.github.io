@@ -175,9 +175,6 @@ class Main
     this.shootingStars.forEach(currentValue => {
       currentValue._onResize();
     })
-    this.comets.forEach(currentValue => {
-      currentValue._onResize();
-    })
     this.sectionTexts.forEach(currentValue => {
       currentValue._onResize();
     })
@@ -276,7 +273,7 @@ class Main
     let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
-    this.camera.lookAt(this.sectionTexts[0].textCloud);
+    //controls.target.set(this.sectionTexts[0].textCloud);
     console.log("init");
   }
   _initPostProcess()
