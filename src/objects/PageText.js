@@ -22,6 +22,8 @@ export class PageText
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
         this.image = image;
+        this.textureSize = 23;
+        this.opacFactor = 0.4;
         if(image == undefined)
         {
             this.hasImage = false;
@@ -211,7 +213,7 @@ export class PageText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size: 25,
+                size: this.textureSize,
                 sizeAttenuation: true,
                 map: sprite,
                 transparent: true,
@@ -331,7 +333,7 @@ export class PageText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.5);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * this.opacFactor);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
             if(this.hasImage)
@@ -356,7 +358,7 @@ export class PageText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeOutTween._object.x);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeOutTween._object.x * this.opacFactor);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
             if(this.hasImage)

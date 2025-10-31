@@ -16,6 +16,8 @@ export class BackText
         this.fontName = 'Courier New';
         this.fontSize = 60;
         this.maxFontSize = 60;
+        this.textureSize = 25;
+        this.opacFactor = 0.45;
         this.textCanvas = document.createElement('canvas');
         this.textCanvas.style.textAlign = 'center';
         this.textCtx = this.textCanvas.getContext('2d', { willReadFrequently: true });
@@ -103,7 +105,7 @@ export class BackText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size:25,
+                size: this.textureSize,
                 sizeAttenuation: true,
                 map: sprite,
                 transparent: true,
@@ -186,7 +188,7 @@ export class BackText
         .onUpdate(() => {
             for(let i = 0; i < this.textLen; i++)
             {
-                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * 0.5);
+                this.textCloud.geometry.getAttribute('color').setXYZW(i, 1, 1, 1, this.fadeInTween._object.x * this.opacFactor);
             }
             this.textCloud.geometry.getAttribute('color').needsUpdate = true;
         })
