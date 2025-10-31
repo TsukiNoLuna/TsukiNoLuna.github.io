@@ -16,7 +16,7 @@ import { NextText } from './NextText';
 import { PrevText } from './PrevText';
 
 
-const gameDevLink = '';
+const gameDevLink = 'https://tsuki376.itch.io/whats-wrong-with-me';
 const numbraLink = 'https://artemisiaexists.itch.io/numbra';
 const aWU6SLink = 'https://magicalmirai.com/2025/procon/entry.html#entry_no10';
 const Sections = {
