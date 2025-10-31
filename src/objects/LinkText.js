@@ -262,11 +262,16 @@ export class LinkText
     {
         if(this.ready)
         {
-            let v = new THREE.Vector3();
-            let w = new THREE.Vector3();
-            v.copy(this.center);
-            this.camera.getWorldDirection(w);
-            w.normalize();
+        //console.log(this.textCloud.position.clone().project(this.camera));
+        let v = new THREE.Vector3();
+        let w = new THREE.Vector3();
+        //this.boundingBox.getCenter(v);
+        //v.copy(this.textCloud.position);
+        v.copy(this.center);
+        this.camera.getWorldDirection(w);
+        w.normalize();
+        //if(!this.clicked)
+        //{
             if(this.onScreen && (this.main.currentSection != undefined && this.main.currentSection != this))
             {
                 this.onScreen = false;
@@ -282,7 +287,7 @@ export class LinkText
                 //console.log("on screen");
                 if(!this.onScreen)
                 {
-                    if(this.main.currentSection == undefined || this.main.currentSection == this)
+                    if(this.link.length == 0 || this.main.currentSection == undefined || this.main.currentSection == this)
                     {
                         for(let i = 0; i < this.textLen; i++)
                         {
@@ -292,7 +297,7 @@ export class LinkText
                     }
                 }
             }
-            else if(this.onScreen)
+            else if(this.onScreen && this.link.length != 0)
             {
                 this.onScreen = false;
                 this.abortController.abort();
@@ -302,6 +307,10 @@ export class LinkText
                     this._reverseTween(i);
                 }
             }
+        //}
+        let z = new THREE.Vector3();
+        this.camera.getWorldDirection(z);
+        //console.log(z);
         }
     }
     _onInitClick(event)
@@ -310,7 +319,10 @@ export class LinkText
         {
             return;
         }
-        window.open(this.link, '_blank');
+        if(this.link.length != 0)
+        {
+            window.open(this.link, '_blank');
+        }
 
     }
     _onResize()

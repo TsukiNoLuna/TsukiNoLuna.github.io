@@ -32,6 +32,7 @@ import skySideTexStr from './images/Skycylinder/MikuProCon_skycylinder_SIDESv07.
 import { LinkText } from './objects/LinkText';
 import githubImg from './images/logos/Github.png';
 import linkedInImg from './images/logos/Linkedin.png';
+import lunaImg from './images/logos/Luna.png';
 
 
 
@@ -266,7 +267,6 @@ class Main
     scene.add(this.skyGroup);
     this._initPostProcess();
     this._generateStarField();
-    //this._initComets();
     this._initText();
     this.shootingStars.push(new ShootingStar(this));
     window.addEventListener("resize", () => this._onResize());
@@ -274,16 +274,6 @@ class Main
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
     console.log("init");
-  }
-  _initComets()
-  {
-    //initialize vocaloid comets
-    this.comets.push(new Comet(this, "Miku"));
-    this.comets.push(new Comet(this, "Luka"));
-    this.comets.push(new Comet(this, "Kaito"));
-    this.comets.push(new Comet(this, "Len"));
-    this.comets.push(new Comet(this, "Rin"));
-    this.comets.push(new Comet(this, "Meiko"));
   }
   _initPostProcess()
   {
@@ -319,7 +309,6 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    //let sprite = this.textureLoader.load("/src/images/sp2.png");
     let sprite = this.textureLoader.load(star);
     let material = new THREE.PointsMaterial({
       color: 'white',
@@ -454,6 +443,7 @@ class Main
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
     this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI/2));
+    this.sectionTexts.push(new LinkText(this, 'Luna', new THREE.Vector3(0, 2500, 1000), '', lunaImg));
     
   }
 
