@@ -138,7 +138,7 @@ class Main
     this.starTimer = 0;
     //this.minPolarAngle = 2.15;
     this.minPolarAngle = 2;
-    this.startingPolarAngle = 2.15;
+    this.startingPolarAngle = 2.4;
     this.polarAngleCutoff = 0.4;
     //this.initialZoom = 1;
     this.initialZoom = 1.3;
@@ -276,7 +276,9 @@ class Main
     let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
-    //controls.target.set(this.sectionTexts[0].textCloud);
+    let spherical = new THREE.Spherical(0.01, this.startingPolarAngle, Math.PI);
+    spherical.makeSafe();
+    this.camera.position.setFromSpherical(spherical);
     console.log("init");
   }
   _initPostProcess()
