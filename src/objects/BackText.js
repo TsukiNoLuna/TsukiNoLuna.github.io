@@ -101,13 +101,12 @@ export class BackText
         textGeo.setAttribute('position', position);
         textGeo.setAttribute('color', color);
         textGeo.computeBoundingBox();
-        let sprite = this.main.textureLoader.load(star);
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
                 size: this.textureSize,
                 sizeAttenuation: true,
-                map: sprite,
+                map: this.main.starTexture,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,

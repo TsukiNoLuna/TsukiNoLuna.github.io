@@ -94,6 +94,7 @@ const progressBar = document.getElementById('progress-bar');
 const label = document.getElementById('bar-label');
 loadingManager.onProgress = function(url, loaded, total){
   progressBar.value = (loaded/total) * 100;
+  //console.log(url);
 }
 
 loadingManager.onLoad = async function(url, item, total){
@@ -103,6 +104,15 @@ loadingManager.onLoad = async function(url, item, total){
     loadingInd++;
     label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
     doneLoading = true;
+    /*console.log(url);
+    loadingInd++;
+    progressBar.value = (loadingInd)/6 * 100;
+    if(loadingInd >= 6)
+    {
+      doneLoading = true;
+      label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
+    }*/
+
 }
 
 
@@ -191,7 +201,7 @@ class Main
     {
       this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
-      //this._onResize();
+      //document.getElementById("view").removeChild(document.getElementById("container"));
     }
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -239,11 +249,11 @@ class Main
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize( w, h );
     //renderer.toneMapping = THREE.NoToneMapping;
-    //document.getElementById("view").appendChild(renderer.domElement);
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.enableZoom = false;
     controls.minPolarAngle = this.minPolarAngle;
+    controls.rotateSpeed = 0.5;
     camera.position.set(0.0, 0.0, -this.camDist);
     camera.zoom = this.initialZoom;
     camera.updateProjectionMatrix();
@@ -266,6 +276,7 @@ class Main
     this.textureLoader = textureLoader;
     this.clock = new THREE.Clock();
     this.batchSystem = new BatchedRenderer();
+    this.starTexture = this.textureLoader.load(star);
     scene.add(this.batchSystem);
     //initialize environment elements
     this._load_skybox();
@@ -317,13 +328,12 @@ class Main
     geo.setAttribute( 'position', position );
     geo.setAttribute( 'color', color );
     //add texture
-    let sprite = this.textureLoader.load(star);
     let material = new THREE.PointsMaterial({
       color: 'white',
       vertexColors: true,
       size: 1,
       sizeAttenuation: true,
-      map: sprite,
+      map: this.starTexture,
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,

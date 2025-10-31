@@ -71,7 +71,7 @@ export class ShootingStar
   }
   _initStar()
   {
-    const map = this.main.textureLoader.load(star);
+    const map = this.main.starTexture;
     const spriteMat = new THREE.SpriteMaterial({map});
     spriteMat.transparent = true;
     spriteMat.depthWrite = false;

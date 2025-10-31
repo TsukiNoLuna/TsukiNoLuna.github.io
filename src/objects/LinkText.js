@@ -136,14 +136,13 @@ export class LinkText
         textGeo.setAttribute('color', color);
         textGeo.center();
         textGeo.computeBoundingBox();
-        let sprite = this.main.textureLoader.load(star);
         let Size = 12 * (2-this.main.zoomFactor);
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
                 size: Size,
                 sizeAttenuation: false,
-                map: sprite,
+                map: this.main.starTexture,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
