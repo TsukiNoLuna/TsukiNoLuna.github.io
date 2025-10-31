@@ -126,7 +126,7 @@ class Main
     //this.textTwinkleTimeRange = 4000;
     this.textTwinkleTimeRange = 3000;
     //this.twinkleDelayRange = 1500;
-    this.twinkleDelayRange = 1300;
+    this.twinkleDelayRange = 1200;
     this.shootingStars = [];
     this.animatedStars = [];
     this.sectionTexts = [];
@@ -187,7 +187,7 @@ class Main
     {
       this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
-      this._onResize();
+      //this._onResize();
     }
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -242,6 +242,7 @@ class Main
     controls.minPolarAngle = this.minPolarAngle;
     camera.position.set(0.0, 0.0, -0.01);
     camera.zoom = this.initialZoom;
+    camera.updateProjectionMatrix();
 
     const amb_light = new THREE.AmbientLight(0x909090);
     //scene.add(amb_light);
