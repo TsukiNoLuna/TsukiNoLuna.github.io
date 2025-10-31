@@ -97,7 +97,7 @@ loadingManager.onProgress = function(url, loaded, total){
 }
 
 loadingManager.onLoad = async function(url, item, total){
-  //console.log('done');
+    console.log('Batch loaded');
     label.textContent = 'Almost there...';
     await wait(1000);
     loadingInd++;
@@ -138,12 +138,14 @@ class Main
     this.starTimer = 0;
     //this.minPolarAngle = 2.15;
     this.minPolarAngle = 2;
+    //this.minPolarAngle = 0;
     this.startingPolarAngle = 2.4;
     this.polarAngleCutoff = 0.4;
-    //this.initialZoom = 1;
+    this.initialZoom = 1;
     this.initialZoom = 1.3;
     this.maxZoom = 2;
     this.zoomFactor = this.maxZoom - this.initialZoom;
+    this.camDist = 5;
     this.erasingSprite = undefined;
     this.sprites = [];
     this.spriteCollision = [];
@@ -242,7 +244,7 @@ class Main
     controls.enablePan = false;
     controls.enableZoom = false;
     controls.minPolarAngle = this.minPolarAngle;
-    camera.position.set(0.0, 0.0, -0.01);
+    camera.position.set(0.0, 0.0, -this.camDist);
     camera.zoom = this.initialZoom;
     camera.updateProjectionMatrix();
 
@@ -276,7 +278,7 @@ class Main
     let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
     window.addEventListener(touchEvent, (event) => this._onClick(event));
     //renderer.domElement.addEventListener('click'. )
-    let spherical = new THREE.Spherical(0.01, this.startingPolarAngle, Math.PI);
+    let spherical = new THREE.Spherical(this.camDist, this.startingPolarAngle, Math.PI);
     spherical.makeSafe();
     this.camera.position.setFromSpherical(spherical);
     console.log("init");
@@ -421,17 +423,17 @@ class Main
     ];
     const circum2height = 4;
     const factor = circum2height / (2 * Math.PI);
-    const height = 5;
+    const height = 50;
     //ratio of distance from foreground to background
-    const distratio = 2000;
+    const distratio = 200;
     const geo = new THREE.CylinderGeometry(height * factor, height * factor, height, 1000);
     const geo2 = new THREE.CylinderGeometry(height * factor * distratio, height * factor * distratio, height * distratio, 1000);
     const cylinder = new THREE.Mesh(geo, materials);
     const cylinder2 = new THREE.Mesh(geo2, materials2);
     cylinder.renderOrder = 3;
     cylinder2.renderOrder = 2;
-    cylinder.position.y += 1;
-    cylinder2.position.y += distratio;
+    cylinder.position.y += height/6;
+    cylinder2.position.y += (height * distratio/6) + 200;
 
     this.skyGroup.add(cylinder);
     this.skyGroup.add(cylinder2);
@@ -448,7 +450,7 @@ class Main
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
-    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 700, 1000), resume, undefined, Math.PI + 1));
+    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI + 1));
     this.sectionTexts.push(new LinkText(this, 'Luna', new THREE.Vector3(0, 2500, 1000), '', lunaImg));
     
   }
@@ -490,6 +492,7 @@ class Main
 
     this.postProcess.render();
     //this.renderer.render(this.scene, this.camera);
+    //console.log(this.camera.position);
   }
 
 }
