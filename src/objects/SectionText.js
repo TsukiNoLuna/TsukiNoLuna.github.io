@@ -128,7 +128,7 @@ export class SectionText
         let material = new THREE.PointsMaterial({
                 color: 'white',
                 vertexColors: true,
-                size: 12,
+                size: 12 * (2-this.main.zoomFactor),
                 sizeAttenuation: false,
                 map: sprite,
                 transparent: true,
