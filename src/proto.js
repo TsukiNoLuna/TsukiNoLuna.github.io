@@ -283,9 +283,10 @@ class Main
     scene.add(this.batchSystem);
     //initialize environment elements
     this._load_skybox();
+    this._generateStarField();
     scene.add(this.skyGroup);
     this._initPostProcess();
-    this._generateStarField();
+    
     this._initText();
     this.shootingStars.push(new ShootingStar(this));
     window.addEventListener("resize", () => this._onResize());
@@ -348,7 +349,7 @@ class Main
       depthWrite: false,
     });
     let starField = new THREE.Points(geo, material);
-    this.scene.add(starField);
+    this.skyGroup.add(starField);
     this.starField = starField;
     for( let i=0; i<this.starAmount; i++ )
     {
@@ -474,11 +475,6 @@ class Main
     
   }
 
-
-  _textFX()
-  {
-
-  }
 
 
   _update() {

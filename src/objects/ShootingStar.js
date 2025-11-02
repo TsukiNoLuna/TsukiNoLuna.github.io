@@ -2,51 +2,24 @@ import * as THREE from 'three';
 import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
 import star from '../images/sp2.png';
 
-
-function getStarPos2(minDist, distRange)
+function getStarPos(minVel, velRange)
 {
   //spawn point in general direction of comets
-  const start = new THREE.Vector3(0, minDist * Math.sqrt(2), -minDist * Math.sqrt(2));
-  const up = new THREE.Vector3(0, 1, 0);
-  const right = new THREE.Vector3(1, 0, 0);
-  const rotOffset = Math.PI/1.74;
-  start.applyAxisAngle(up, rotOffset);
-  right.applyAxisAngle(up, rotOffset);
-  const distx = (Math.random() - 1) * distRange * 2;
-  const disty = (Math.random() - 1) * distRange;
-  const distz = (Math.random() - 1) * distRange * 2;
-  const displacement = new THREE.Vector3(distx, 0, distz);
-  start.applyAxisAngle(up, Math.PI/8);
-  right.applyAxisAngle(up, Math.PI/8);
-  right.setLength(-70);
-  start.add(right);
-  start.add(displacement);
-  right.set(1, 0, 0);
-  right.applyAxisAngle(up, 2.32);
-  right.setLength((Math.random() - 0.5) * 100);
-  start.add(right);
-  return start;
-}
-
-function getStarVel2(minVel, velRange)
-{
-  //velocity in general direction of comets
+  //const start = new THREE.Vector3(0, minDist * Math.sqrt(2), -minDist * Math.sqrt(2));
+  const factor = 40;
+  const start = new THREE.Vector3(-3.5 * factor, 4 * factor, 0);
+  const end = new THREE.Vector3(3.5 * factor, 0.25 * factor, 0);
   const dist = minVel + Math.random() * velRange;
-  const out = new THREE.Vector3(0, -dist, 0);
-  const rot = Math.PI/3 + Math.random() * Math.PI/12;
-  const right = new THREE.Vector3(1, 0, 0);
-  out.applyAxisAngle(right, -rot);
-  const up = new THREE.Vector3(0, 1, 0);
-  const rotOffset = Math.PI/1.74;
-  out.applyAxisAngle(up, rotOffset);
-  out.applyAxisAngle(up, Math.PI/4);
-  out.applyAxisAngle(up, -Math.PI/16);
-  out.applyAxisAngle(up, Math.random() * Math.PI/8);
-  //out.add(right);
+  const offset = new THREE.Vector3((2 * Math.random() - 1) * 0, (2 * Math.random() - 1) * 50, (2 * Math.random() - 1) * 200);
+  start.add(offset);
+  //end.add(offset);
+  const vel = end.clone();
+  vel.sub(start);
+  vel.setLength(dist);
 
-  return out;
-  //if angle between velocity and down vector
+  return [start, vel];
 }
+
 
 export class ShootingStar
 {
@@ -58,11 +31,14 @@ export class ShootingStar
     this.distRange = 20;
     this.minVel = 4;
     this.velRange = 6;
-    this.trailLength = 30;
+    this.trailLength = 50;
     this.color = new THREE.Color(1, 1, 1);
     this.scale = new THREE.Vector3(1, 1, 1);
-    this.startPos = getStarPos2(this.minDist, this.distRange);
-    this.velocity = getStarVel2(this.minVel, this.velRange);
+    //this.startPos = getStarPos2(this.minDist, this.distRange);
+    //this.velocity = getStarVel2(this.minVel, this.velRange);
+    const startAndVel = getStarPos(this.minVel, this.velRange);
+    this.startPos = startAndVel[0];
+    this.velocity = startAndVel[1];
     this.rotationSpeed = 0.15 + Math.random() * Math.PI/4;
     this._initStar();
     this._initTrail();
