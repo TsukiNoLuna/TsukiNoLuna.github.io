@@ -291,11 +291,11 @@ class Main
     window.addEventListener("resize", () => this._onResize());
     if('onclick' in window)
     {
-      window.addEventListener('click', (event) => this._onClick(event));
+      document.body.addEventListener('click', (event) => this._onClick(event));
     }
     if('ontouch' in window)
     {
-      window.addEventListener('touchstart', (event) => this._onClick(event));
+      document.body.addEventListener('touchstart', (event) => this._onClick(event));
     }
     //renderer.domElement.addEventListener('click'. )
     let spherical = new THREE.Spherical(this.camDist, this.startingPolarAngle, Math.PI);

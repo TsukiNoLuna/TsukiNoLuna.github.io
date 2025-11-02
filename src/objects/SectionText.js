@@ -161,7 +161,8 @@ export class SectionText
         const boxGeo = new THREE.BoxGeometry(10, 10, 10);
         const cube = new THREE.Mesh(boxGeo, boxMat);
         cube.position.copy(this.textCloud.position);
-        cube.lookAt(this.camera.position);
+        //cube.lookAt(this.camera.position);
+        cube.lookAt(new THREE.Vector3(0, 0, 0));
         //this.scene.add(cube);
         this.textCloud.setRotationFromQuaternion(cube.quaternion);
         this.textCloud.rotateX(Math.PI);
