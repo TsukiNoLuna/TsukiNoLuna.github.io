@@ -36,6 +36,10 @@ import lunaImg from './images/logos/Luna.png';
 
 
 
+container.addEventListener('touchstart', () => {});
+container.addEventListener('touchend', () => {});
+container.addEventListener('touchcancel', () => {});
+container.addEventListener('touchmove', () => {});
 
 function wait(milliseconds) {
   //simple sleep function
@@ -148,10 +152,9 @@ class Main
     this.starTimer = 0;
     //this.minPolarAngle = 2.15;
     this.minPolarAngle = 2;
-    //this.minPolarAngle = 0;
     this.startingPolarAngle = 2.4;
     this.polarAngleCutoff = 0.4;
-    this.initialZoom = 1;
+    //this.initialZoom = 1;
     this.initialZoom = 1.3;
     this.maxZoom = 2;
     this.zoomFactor = this.maxZoom - this.initialZoom;
