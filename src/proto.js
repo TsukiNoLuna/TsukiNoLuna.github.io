@@ -155,7 +155,7 @@ class Main
     this.initialZoom = 1.3;
     this.maxZoom = 2;
     this.zoomFactor = this.maxZoom - this.initialZoom;
-    this.camDist = 5;
+    this.camDist = 1;
     this.erasingSprite = undefined;
     this.sprites = [];
     this.spriteCollision = [];
@@ -288,7 +288,6 @@ class Main
     window.addEventListener("resize", () => this._onResize());
     if('onclick' in window)
     {
-      console.log('here');
       window.addEventListener('click', (event) => this._onClick(event));
     }
     if('ontouch' in window)
@@ -440,17 +439,17 @@ class Main
     ];
     const circum2height = 4;
     const factor = circum2height / (2 * Math.PI);
-    const height = 50;
+    const height = 5;
     //ratio of distance from foreground to background
-    const distratio = 200;
+    const distratio = 2000;
     const geo = new THREE.CylinderGeometry(height * factor, height * factor, height, 1000);
     const geo2 = new THREE.CylinderGeometry(height * factor * distratio, height * factor * distratio, height * distratio, 1000);
     const cylinder = new THREE.Mesh(geo, materials);
     const cylinder2 = new THREE.Mesh(geo2, materials2);
     cylinder.renderOrder = 3;
     cylinder2.renderOrder = 2;
-    cylinder.position.y += height/6;
-    cylinder2.position.y += (height * distratio/6) + 200;
+    cylinder.position.y += 0.5;
+    cylinder2.position.y += distratio;
 
     this.skyGroup.add(cylinder);
     this.skyGroup.add(cylinder2);
