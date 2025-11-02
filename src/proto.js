@@ -442,17 +442,17 @@ class Main
     ];
     const circum2height = 4;
     const factor = circum2height / (2 * Math.PI);
-    const height = 5;
+    const height = 10;
     //ratio of distance from foreground to background
-    const distratio = 2000;
+    const distratio = 1000;
     const geo = new THREE.CylinderGeometry(height * factor, height * factor, height, 1000);
     const geo2 = new THREE.CylinderGeometry(height * factor * distratio, height * factor * distratio, height * distratio, 1000);
     const cylinder = new THREE.Mesh(geo, materials);
     const cylinder2 = new THREE.Mesh(geo2, materials2);
     cylinder.renderOrder = 3;
     cylinder2.renderOrder = 2;
-    cylinder.position.y += 0.5;
-    cylinder2.position.y += distratio;
+    cylinder.position.y += 1.3;
+    cylinder2.position.y += distratio * 2;
 
     this.skyGroup.add(cylinder);
     this.skyGroup.add(cylinder2);
