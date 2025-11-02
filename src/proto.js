@@ -286,8 +286,15 @@ class Main
     this._initText();
     this.shootingStars.push(new ShootingStar(this));
     window.addEventListener("resize", () => this._onResize());
-    let touchEvent = 'onclick' in window ? 'click' : 'touchstart';
-    window.addEventListener(touchEvent, (event) => this._onClick(event));
+    if('onclick' in window)
+    {
+      console.log('here');
+      window.addEventListener('click', (event) => this._onClick(event));
+    }
+    if('ontouch' in window)
+    {
+      window.addEventListener('touchstart', (event) => this._onClick(event));
+    }
     //renderer.domElement.addEventListener('click'. )
     let spherical = new THREE.Spherical(this.camDist, this.startingPolarAngle, Math.PI);
     spherical.makeSafe();
