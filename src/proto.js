@@ -396,7 +396,7 @@ class Main
     const skyHeight = 14000;
     const skyGeo = new THREE.CylinderGeometry(skyHeight * skyFactor, skyHeight * skyFactor, skyHeight, 10000);
     const skyCylinder = new THREE.Mesh(skyGeo, skyMats);
-    skyCylinder.position.y += 6000;
+    skyCylinder.position.y += 5000;
     skyCylinder.rotateY(Math.PI);
     this.skyGroup.add(skyCylinder);
     
