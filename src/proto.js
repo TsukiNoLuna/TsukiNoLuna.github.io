@@ -465,14 +465,15 @@ class Main
     const github = 'https://github.com/TsukiNoLuna';
     const linkedin = 'https://www.linkedin.com/in/luna-gary-09398835a';
     const resume = 'https://drive.google.com/uc?export=download&id=1_ySCw0lObSI0zwVVqhwa3QXlx636hK86';
+    const yuzu = 'https://www.instagram.com/yuzu.yooja/';
     this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
-    this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 900, 1500), github, githubImg, -Math.PI/3));
+    this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 1000, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
     this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI + 1));
     this.sectionTexts.push(new LinkText(this, 'Luna', new THREE.Vector3(0, 2500, 1000), '', lunaImg));
-    
+    this.sectionTexts.push(new LinkText(this, 'Art by yuzuyooja!', new THREE.Vector3(0, 400, 1000), yuzu, undefined));
   }
 
 
