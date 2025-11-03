@@ -116,7 +116,6 @@ export class ShootingStar
 
   _brighten()
   {
-    console.log('here');
     this.trail.material.opacity = 1;
     this.sprite.material.opacity = 1;
     this.trail.material.needsUpdate = true;
