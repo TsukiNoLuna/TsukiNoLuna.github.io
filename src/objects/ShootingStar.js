@@ -32,6 +32,7 @@ export class ShootingStar
     this.minVel = 4;
     this.velRange = 6;
     this.trailLength = 50;
+    this.damp = 0.3;
     this.color = new THREE.Color(1, 1, 1);
     this.scale = new THREE.Vector3(1, 1, 1);
     //this.startPos = getStarPos2(this.minDist, this.distRange);
@@ -103,6 +104,23 @@ export class ShootingStar
     {
       this._delete();
     }
+  }
+
+  _dampen()
+  {
+    this.trail.material.opacity = this.damp;
+    this.sprite.material.opacity = this.damp;
+    this.trail.material.needsUpdate = true;
+    this.sprite.material.needsUpdate = true;
+  }
+
+  _brighten()
+  {
+    console.log('here');
+    this.trail.material.opacity = 1;
+    this.sprite.material.opacity = 1;
+    this.trail.material.needsUpdate = true;
+    this.sprite.material.needsUpdate = true;
   }
   _delete()
   {

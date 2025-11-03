@@ -307,6 +307,7 @@ export class SectionText
             return;
         }
         this.main.currentSection = this;
+        this.main._dampenStars();
         this.clicked = true;
         this.loaded = false;
         this.illuminated = false;
@@ -355,6 +356,7 @@ export class SectionText
         if(raycaster.ray.intersectsBox(this.backButton.boundingBox))
         {
             this._zoomOut();
+            this.main._brightenStars();
             return;
         }
         if(this.hasMultiple)

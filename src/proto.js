@@ -477,6 +477,20 @@ class Main
   }
 
 
+  _dampenStars()
+  {
+    this.shootingStars.forEach((currentValue) => {
+      currentValue._dampen();
+    })
+  }
+
+  _brightenStars()
+  {
+    this.shootingStars.forEach((currentValue) => {
+      currentValue._brighten();
+    })
+  }
+
 
   _update() {
     requestAnimationFrame(this._update.bind(this));
