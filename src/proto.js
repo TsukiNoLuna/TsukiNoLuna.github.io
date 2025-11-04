@@ -1,24 +1,10 @@
 import * as THREE from 'three';
-//import * as THREE from 'three/webgpu';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-//import SpriteText from 'three-spritetext';
-//import { Player } from "textalive-app-api";
-//import { Tween } from 'three/examples/jsm/libs/tween.module.js';
 import TWEEN, { update } from 'three/examples/jsm/libs/tween.module.js';
-//import { getScreenPosition, pass, renderOutput, uniform } from 'three/tsl';
-//import { chromaticAberration } from 'three/addons/tsl/display/ChromaticAberrationNode.js';
-//import { PostProcessing, Vector2, Vector3 } from 'three/webgpu';
 import { MeshLineGeometry, MeshLineMaterial} from 'meshline'
-//import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass } from "postprocessing";
 import { ChromaticAberrationEffect } from 'postprocessing';
 import { ParticleEmitter, BatchedRenderer, ParticleSystem} from 'three.quarks';
-///import { PointEmitter, ConeEmitter } from 'three.quarks';
-//import { IntervalValue, ConstantValue, ConstantColor } from 'three.quarks';
-//import { ColorOverLife, SizeOverLife, FrameOverLife, SpeedOverLife} from 'three.quarks';
-//import { ColorRange, PiecewiseBezier, Bezier, RenderMode, ApplyForce } from 'three.quarks';
-//import { clamp } from 'three/src/math/MathUtils.js';
-//import { buffer, sign } from 'three/tsl';
 import { ShootingStar } from './objects/ShootingStar';
 import { SectionText } from './objects/SectionText';
 import { PageText } from './objects/PageText';
@@ -33,6 +19,7 @@ import { LinkText } from './objects/LinkText';
 import githubImg from './images/logos/Github.png';
 import linkedInImg from './images/logos/Linkedin.png';
 import lunaImg from './images/logos/Luna.png';
+import resumePdf from './Text/LunaGary.pdf';
 
 
 
@@ -108,14 +95,6 @@ loadingManager.onLoad = async function(url, item, total){
     loadingInd++;
     label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
     doneLoading = true;
-    /*console.log(url);
-    loadingInd++;
-    progressBar.value = (loadingInd)/6 * 100;
-    if(loadingInd >= 6)
-    {
-      doneLoading = true;
-      label.textContent = 'Click to start!\nLook around by clicking and dragging, and click on anything you see to learn more about me!';
-    }*/
 
 }
 
@@ -234,8 +213,6 @@ class Main
   _initScene()
   {
     //Init scene, camera, controls, and renderer
-    //let w = document.documentElement.clientWidth;
-    //let h = document.documentElement.clientHeight;
     let w = Math.round(window.innerWidth);
     let h = Math.round(window.innerHeight);
     this.screenW = w;
@@ -298,7 +275,6 @@ class Main
     {
       document.body.addEventListener('touchstart', (event) => this._onClick(event));
     }
-    //renderer.domElement.addEventListener('click'. )
     let spherical = new THREE.Spherical(this.camDist, this.startingPolarAngle, Math.PI);
     spherical.makeSafe();
     this.camera.position.setFromSpherical(spherical);
@@ -471,7 +447,7 @@ class Main
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 1000, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
-    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resume, undefined, Math.PI + 1));
+    this.sectionTexts.push(new LinkText(this, 'Resume', new THREE.Vector3(0, 300, 1000), resumePdf, undefined, Math.PI + 1));
     this.sectionTexts.push(new LinkText(this, 'Luna', new THREE.Vector3(0, 2500, 1000), '', lunaImg));
     this.sectionTexts.push(new LinkText(this, 'Art by yuzuyooja!', new THREE.Vector3(0, 400, 1000), yuzu, undefined));
   }
