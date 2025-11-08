@@ -143,8 +143,6 @@ export class PrevText
         this.boundingBox.getCenter(this.center);
         this.boundingBox.expandByScalar(2);
         //this.scene.add(this.textCloud);
-        this.boundingBox = new THREE.Box3();
-        this.boundingBox.setFromObject(this.textCloud);
         this.textLen = len;
     }
     _onResize()
