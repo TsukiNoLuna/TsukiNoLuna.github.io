@@ -94,6 +94,11 @@ class Main
     this.polarAngleCutoff = 0.4;
     //this.initialZoom = 1;
     this.initialZoom = 1.3;
+    if(window.innerHeight > window.innerWidth)
+    {
+      this.minPolarAngle = 2.15;
+      this.initialZoom = 1;
+    }
     this.maxZoom = 2;
     this.zoomFactor = this.maxZoom - this.initialZoom;
     this.camDist = 1;
@@ -121,10 +126,25 @@ class Main
     //change width and height on necessary elements
     let w = Math.round(window.innerWidth);
     let h = Math.round(window.innerHeight);
+    /*if(window.innerHeight > window.innerWidth)
+    {
+      this.minPolarAngle = 2.15;
+      this.initialZoom = 1;
+    }
+    else{
+      this.minPolarAngle = 2;
+      this.initialZoom = 1.3;
+    }
+    if(this.currentSection == undefined)
+    {
+      this.camera.zoom = this.initialZoom;
+    }
+    this.zoomFactor = this.maxZoom - this.initialZoom;*/
     this.screenW = w;
     this.screenH = h;
     this.camera.aspect = w/h;
     this.camera.updateProjectionMatrix();
+    this.controls.minPolarAngle = this.minPolarAngle;
     this.renderer.setSize(w, h);
     this.postProcess.setSize(w, h);
     this.shootingStars.forEach(currentValue => {

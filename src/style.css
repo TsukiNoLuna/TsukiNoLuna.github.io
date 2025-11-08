@@ -50,14 +50,17 @@ html, body {
 li { 
   float: left;
   caret-color: transparent;
+  width: 20%;
 }
 
 li  label { /* all pages, top tab word labels */ /*adjusted!*/
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 1.6vw;
+  padding: 1.6vh 1.6vw;
   text-decoration: none;
+  white-space: nowrap;
+  font-size: clamp(1rem, 2vw + 1rem, 1.5rem);
 }
 
 label:hover
