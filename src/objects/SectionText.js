@@ -14,6 +14,7 @@ import numbraImg from '../Text/Numbra.png';
 import { BackText } from './BackText';
 import { NextText } from './NextText';
 import { PrevText } from './PrevText';
+import { lerp } from 'three/src/math/MathUtils.js';
 
 
 const gameDevLink = 'https://tsuki376.itch.io/whats-wrong-with-me';
@@ -24,6 +25,7 @@ const Sections = {
   "About Me": [[aboutMe, undefined]],
   "Projects": [[gameDev, gameDevImg, gameDevLink], [aWU6S, aWU6SImg, aWU6SLink], [numbra, numbraImg, numbraLink]]
 };
+
 
 function wait(milliseconds) {
   //simple sleep function
@@ -37,6 +39,7 @@ export class SectionText
     constructor(main, text, pos, angle = 0)
     {
         this.textString = text;
+        this.main = main;
         this.fontName = 'Courier New';
         this.fontSize = 100;
         this.textCanvas = document.createElement('canvas');
@@ -47,15 +50,25 @@ export class SectionText
         this.camera = main.camera;
         this.pos = pos;
         const up = new THREE.Vector3(0, 1, 0);
-        this.pos.applyAxisAngle(up, angle);
+        //const right = new THREE.Vector3(1, 0, 0);
+        const quaternion = new THREE.Quaternion();
+        //quaternion.setFromAxisAngle(right, polar + Math.PI);
+        //this.pos.applyQuaternion(quaternion);
+        quaternion.setFromAxisAngle(up, angle);
+        this.pos.applyQuaternion(quaternion);
         //this.onScreenAngle = Math.PI/4;
         this.onScreenAngle = Math.PI/8;
         this.clicked = false;
+        this.headerClicked = false;
         this.loaded = true;
         this.abortController = new AbortController();
         this.main = main;
         this.illuminated = false;
         this.zoomInTime = 1200;
+        this.headerClickTime = 2000;
+        this.headerNameFade = 1000;
+        this.origPos = new THREE.Vector3();
+        this.camPos = new THREE.Vector3();
         this.pageTexts = [];
         this.ind = 0;
         this._sample_coordinates();
@@ -72,7 +85,18 @@ export class SectionText
             this.hasMultiple = true;
         }
         this.backButton = new BackText(this.main, this.textCloud.rotation);
-        
+        let element = document.getElementById(this.textString);
+        if(element)
+        {
+            if('onclick' in window)
+            {
+                element.addEventListener('click', (event) => this._onHeaderClick(event));
+            }
+            if('ontouch' in window)
+            {
+                element.addEventListener('touchstart', (event) => this._onHeaderClick(event));
+            }
+        }
     }
     _sample_coordinates()
     {
@@ -171,8 +195,10 @@ export class SectionText
         this.boundingBox.getCenter(this.center);
         this.cube = cube;
         this.tempCamera = new THREE.PerspectiveCamera();
-        this.tempCamera.position.copy(this.camera.position);
-        this.tempCamera.lookAt(this.center);
+        this.lookPos = new THREE.Vector3();
+        this.cube.getWorldDirection(this.lookPos);
+        this.lookPos.setLength(this.main.camDist);
+
         this.scene.add(this.textCloud);
         for(let i = 0; i < len; i++)
         {   
@@ -238,7 +264,11 @@ export class SectionText
         .Tween(v)
         .to({x: end}, end-start)
         .onUpdate(() => {
-        const abs = this.textTwinkleTweens[idx]._object.x/this.textTwinkleTweensDur[idx];
+        let abs = this.textTwinkleTweens[idx]._object.x/this.textTwinkleTweensDur[idx];
+        if(this.headerClicked)
+        {
+            abs = 1;
+        }
         this.textCloud.geometry.getAttribute('color').setXYZW(idx, 1, 1, 1, abs);
         this.textCloud.geometry.getAttribute('color').needsUpdate = true;
         if(abs >= 0.8 && !this.illuminated)
@@ -250,11 +280,8 @@ export class SectionText
     }
     _onUpdate(delta)
     {
-        //console.log(this.textCloud.position.clone().project(this.camera));
         let v = new THREE.Vector3();
         let w = new THREE.Vector3();
-        //this.boundingBox.getCenter(v);
-        //v.copy(this.textCloud.position);
         v.copy(this.center);
         this.camera.getWorldDirection(w);
         w.normalize();
@@ -272,7 +299,6 @@ export class SectionText
             }
             if(w.angleTo(v) < this.onScreenAngle)
             {
-                //console.log("on screen");
                 if(!this.onScreen)
                 {
                     if(this.main.currentSection == undefined || this.main.currentSection == this)
@@ -285,7 +311,7 @@ export class SectionText
                     }
                 }
             }
-            else if(this.onScreen)
+            else if(this.onScreen && !this.headerClicked)
             {
                 this.onScreen = false;
                 this.abortController.abort();
@@ -298,11 +324,11 @@ export class SectionText
         //}
         let z = new THREE.Vector3();
         this.camera.getWorldDirection(z);
-        //console.log(z);
+
     }
     _onInitClick(event)
     {
-        if(!this.illuminated || this.clicked || !this.loaded)
+        if(!this.illuminated || this.clicked || this.headerClicked ||!this.loaded)
         {
             return;
         }
@@ -317,21 +343,29 @@ export class SectionText
         v.add(this.camera.position);
         let w = new THREE.Vector3();
         this.boundingBox.getCenter(w);
-        //this.camPrevVector = v.clone();
-        //this.camDirVector = w.clone().sub(v);
-        //const tempCamera = new THREE.PerspectiveCamera();
-        //tempCamera.position.copy(this.camera.position);
+        this.tempCamera.position.copy(this.camera.position);
+        this.tempCamera.lookAt(this.center);
         this.targetQuat = this.tempCamera.quaternion.clone();
         this.origQuat = this.camera.quaternion.clone();
+        this.origPolar = this.main.controls.getPolarAngle();
+        this.origAzim = this.main.controls.getAzimuthalAngle();
+        //this.origSpherical.
+        //this.camera.position.setFromSpherical(this.targetSpherical);
         let z = new THREE.Vector3(0, 0, 0);
         this.cameraTween = new TWEEN.Tween(z)
         .to({x: 1}, this.zoomInTime)
         .onUpdate(() => {
-         //this.camera.lookAt(this.camPrevVector.clone().add(this.camDirVector.clone().multiplyScalar(this.cameraTween._object.x)));
+         //let polar = lerp(this.origPolar, this.polar, this.cameraTween._object.x);
+         //let azim = lerp(this.origAzim, this.azim, this.cameraTween._object.x);
+         //let spherical = new THREE.Spherical(this.main.camDist, polar, azim);
+         //spherical.makeSafe();
+         //this.camera.position.setFromSpherical(spherical);
          this.camera.quaternion.copy(this.origQuat);
          this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
+
          this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
-         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
+         this.textCloud.material.opacity = 1 - this.cameraTween._object.x;
+         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
@@ -345,6 +379,133 @@ export class SectionText
          this.cameraTween = null;
         })
         .start();
+    }
+
+    _onHeaderClickSCRAPPED(event)
+    {
+      if(this.clicked || this.headerClicked || !this.loaded)
+        {
+            return;
+        }
+        this.main.currentSection = this;
+        this.main._dampenStars();
+        this.loaded = false;
+        this.headerClicked = true;
+        if(!this.onScreen)
+        {
+            for(let i = 0; i < this.textLen; i++)
+            {
+                this._startTween(i, this.abortController.signal);
+            }
+            this.onScreen = true;
+        }
+        //this.main.controls.enabled = false;
+        let z = new THREE.Vector3(0, 0, 0);
+        this.camera.position.copy(this.origPos);
+        console.log(this.origPos);
+        console.log(this.lookPos);
+        this.headerTween = new TWEEN.Tween(z)
+        .to({x: 1}, this.headerClickTime)
+        .onUpdate(() =>
+        {
+            this.camPos = this.origPos.clone().lerp(this.lookPos, this.headerTween._object.x);
+            //console.log(this.camPos);
+            this.camPos.setLength(this.main.camDist);
+            this.camera.position.set(this.camPos.x, this.camPos.y, this.camPos.z);
+            //this.main.controls.update();
+        })
+        .onComplete(() =>
+        {
+            this.main.controls.enabled = true;
+            this.loaded = true;
+            this.headerClicked = false;
+        })
+        .start();
+
+
+    }
+
+    _onHeaderClick(event)
+    {
+      if(this.clicked || this.headerClicked || !this.loaded)
+        {
+            return;
+        }
+        this.loaded = false;
+        this.headerClicked = true;
+        if(!this.onScreen)
+        {
+            for(let i = 0; i < this.textLen; i++)
+            {
+                this._startTween(i, this.abortController.signal);
+            }
+            this.onScreen = true;
+        }
+        this.main.currentSection = this;
+        this.main._dampenStars();
+        this.clicked = true;
+        this.loaded = false;
+        this.illuminated = false;
+        this.main.controls.enabled = false;
+        let v = new THREE.Vector3();
+        this.camera.getWorldDirection(v);
+        v.add(this.camera.position);
+        let w = new THREE.Vector3();
+        this.boundingBox.getCenter(w);
+        this.tempCamera.position.copy(this.camera.position);
+        this.tempCamera.lookAt(this.center);
+        this.targetQuat = this.tempCamera.quaternion.clone();
+        this.origQuat = this.camera.quaternion.clone();
+        this.origPolar = this.main.controls.getPolarAngle();
+        this.origAzim = this.main.controls.getAzimuthalAngle();
+        //this.origSpherical.
+        //this.camera.position.setFromSpherical(this.targetSpherical);
+        let z = new THREE.Vector3(0, 0, 0);
+        this.cameraTween = new TWEEN.Tween(z)
+        .to({x: 1}, this.headerClickTime)
+        .onUpdate(() => {
+         //let polar = lerp(this.origPolar, this.polar, this.cameraTween._object.x);
+         //let azim = lerp(this.origAzim, this.azim, this.cameraTween._object.x);
+         //let spherical = new THREE.Spherical(this.main.camDist, polar, azim);
+         //spherical.makeSafe();
+         //this.camera.position.setFromSpherical(spherical);
+         this.camera.quaternion.copy(this.origQuat);
+         this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
+
+         this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
+         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
+         this.camera.updateProjectionMatrix();
+        })
+        .onComplete(() => {
+            this._headerFade();
+         this.cameraTween = null;  
+        })
+        .start();
+    }
+
+    _headerFade()
+    {
+        let z = new THREE.Vector3(0, 0, 0);
+        this.headerTween = new TWEEN.Tween(z)
+        .to({x: 1}, this.headerNameFade)
+        .onUpdate(() =>
+        {
+            this.textCloud.material.opacity = 1 - this.headerTween._object.x;
+        })
+        .onComplete(() =>
+        {  
+            this.pageTexts[this.ind]._tweenIn();
+            this.backButton._tweenIn();
+            if(this.hasMultiple)
+            {
+                this.nextButton._tweenIn();
+                this.prevButton._tweenIn();
+            }
+            this.headerClicked = false;
+            this.headerTween = null;
+        })
+        .start();
+
     }
 
     _onPageClick(event, raycaster)
@@ -376,8 +537,6 @@ export class SectionText
         {
             if(raycaster.ray.intersectsBox(this.pageTexts[this.ind].planeBB))
             {
-                //console.log('here');
-                //console.log(Sections[this.textString][this.ind][2]);
                 window.open(Sections[this.textString][this.ind][2], '_blank');
             }
         }
@@ -398,7 +557,8 @@ export class SectionText
         .to({x: 0}, this.zoomInTime)
         .onUpdate(() => {
          this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
-         this.textCloud.material.opacity = 1 - this.cameraTween._object.x; 
+         this.textCloud.material.opacity = 1 - this.cameraTween._object.x;
+         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
@@ -408,6 +568,11 @@ export class SectionText
          this.main.controls.enabled = true;
          this.main.currentSection = undefined;
          this.loaded = true;
+         let pos = new THREE.Vector3();
+         this.cube.getWorldDirection(pos);
+         pos.setLength(this.main.camDist);
+         this.camera.position.set(pos.x, pos.y, pos.z);
+         this.main.controls.update();
         })
         .start();
     }

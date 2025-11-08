@@ -33,6 +33,39 @@ html, body {
     z-index: 2;
 }
 
+#navbar{
+    list-style-type: none;
+    background-color: #090b0c;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 2;
+
+}
+
+li { 
+  float: left;
+  caret-color: transparent;
+}
+
+li  label { /* all pages, top tab word labels */ /*adjusted!*/
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 1.6vw;
+  text-decoration: none;
+}
+
+label:hover
+{
+    background-color: #111111;
+}
+
+
 .progress-bar-container
 {
     position: absolute;

@@ -25,7 +25,9 @@ export class LinkText
         this.camera = main.camera;
         this.pos = pos;
         const up = new THREE.Vector3(0, 1, 0);
-        this.pos.applyAxisAngle(up, angle);
+        const quaternion = new THREE.Quaternion();
+        quaternion.setFromAxisAngle(up, angle);
+        this.pos.applyQuaternion(quaternion);
         this.onScreenAngle = Math.PI/4;
         this.clicked = false;
         this.loaded = true;
@@ -54,6 +56,29 @@ export class LinkText
         }
         else{
             this._sample_coordinates();
+        }
+        let element = document.getElementById(this.textString);
+        if(element)
+        {
+            if('onclick' in window)
+            {
+                element.addEventListener('click', (event) => {
+                    if(this.link.length != 0)
+                    {
+                        window.open(this.link, '_blank');
+                    }
+                });
+            }
+            if('ontouch' in window)
+            {
+                element.addEventListener('touchstart', (event) => 
+                {
+                    if(this.link.length != 0)
+                    {
+                        window.open(this.link, '_blank');
+                    }  
+                });
+            }
         }
     }
     _sample_coordinates()

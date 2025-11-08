@@ -35,47 +35,6 @@ function wait(milliseconds) {
   });
 }
 
-function getScreenDistance(position1, position2, camera) {
-  // Input World Positions
-  const out = [];
-  // Project to screen
-  const screenPosition1 = position1.clone().project(camera);
-  const screenPosition2 = position2.clone().project(camera);
-
-  // Convert to Vector2
-  const screenVector1 = new THREE.Vector2(screenPosition1.x, screenPosition1.y);
-  const screenVector2 = new THREE.Vector2(screenPosition2.x, screenPosition2.y);
-
-  // Calculate 2D distance
-  const screenDistance = screenVector1.distanceTo(screenVector2);
-  //horizontal and vertical distance in normalized device coordinates
-  const ndcX = Math.abs(screenVector1.x - screenVector2.x);
-  const ndcY = Math.abs(screenVector1.y - screenVector2.y);
-  let w = document.documentElement.clientWidth;
-  let h = document.documentElement.clientHeight;
-  //convert to pixels
-  const pixelX = (ndcX * 0.5 + 0.5) * w;
-  const pixelY = (ndcY * 0.5 + 0.5) * h;
-  out.push(pixelX);
-  out.push(pixelY);
-  //returns vector of horizontal and vertical distance
-  return out;
-}
-function getAnimationFrames(path, numFrames) {
-  //grab frames from folder
-  const fileType = ".png";
-  const frames = [];
-  for(let i = 1; i <= numFrames; i++)
-  {
-    frames.push(`${i}`);
-  }
-  const frameStrings = frames.map(frame => {
-      return path + frame + fileType;
-  });
-  return frameStrings;
-}
-
-
 
 const loadingManager = new THREE.LoadingManager();
 let rendererO;
@@ -183,6 +142,7 @@ class Main
     {
       this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
+      document.getElementById("navbar").style.opacity = 0.5;
       //document.getElementById("view").removeChild(document.getElementById("container"));
     }
     const raycaster = new THREE.Raycaster();
@@ -195,7 +155,6 @@ class Main
     });
     if(this.currentSection != undefined)
     {
-      //this.currentSection._nextPage();
       this.currentSection._onPageClick(event, raycaster);
     }
     for(let i = 0; i < this.sectionTexts.length; i++)
@@ -203,6 +162,7 @@ class Main
       if(raycaster.ray.intersectsBox(textobjects[i]) && this.currentSection == undefined)
       {
         this.sectionTexts[i]._onInitClick(event);
+        //this.sectionTexts[1]._onHeaderClick(event);
       }
     }
 
@@ -443,7 +403,9 @@ class Main
     const resume = 'https://drive.google.com/uc?export=download&id=1_ySCw0lObSI0zwVVqhwa3QXlx636hK86';
     const yuzu = 'https://www.instagram.com/yuzu.yooja/';
     this.sectionTexts.push(new SectionText(this, 'Luna Gary', new THREE.Vector3(0, 600, 500)));
+    //this.sectionTexts.push(new SectionText(this, 'Luna Gary', Math.sqrt(61) * 100, 0, 2.15));
     this.sectionTexts.push(new SectionText(this, 'About Me', new THREE.Vector3(800, 600, 500)));
+    //this.sectionTexts.push(new SectionText(this, 'About Me', Math.sqrt(41) * 100, Math.PI/2, 2));
     this.sectionTexts.push(new SectionText(this, 'Projects', new THREE.Vector3(500, 500, -500)));
     this.sectionTexts.push(new LinkText(this, 'Github', new THREE.Vector3(0, 1000, 1500), github, githubImg, -Math.PI/3));
     this.sectionTexts.push(new LinkText(this, 'LinkedIn', new THREE.Vector3(0, 1200, 1000), linkedin, linkedInImg, Math.PI));
@@ -498,7 +460,7 @@ class Main
 
     this.postProcess.render();
     //this.renderer.render(this.scene, this.camera);
-    //console.log(this.camera.position);
+    //console.log(this.controls.getPolarAngle());
   }
 
 }
