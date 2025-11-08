@@ -126,7 +126,7 @@ class Main
     //change width and height on necessary elements
     let w = Math.round(window.innerWidth);
     let h = Math.round(window.innerHeight);
-    /*if(window.innerHeight > window.innerWidth)
+    if(window.innerHeight > window.innerWidth)
     {
       this.minPolarAngle = 2.15;
       this.initialZoom = 1;
@@ -139,7 +139,7 @@ class Main
     {
       this.camera.zoom = this.initialZoom;
     }
-    this.zoomFactor = this.maxZoom - this.initialZoom;*/
+    this.zoomFactor = this.maxZoom - this.initialZoom;
     this.screenW = w;
     this.screenH = h;
     this.camera.aspect = w/h;

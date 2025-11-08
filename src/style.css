@@ -60,7 +60,7 @@ li  label { /* all pages, top tab word labels */ /*adjusted!*/
   padding: 1.6vh 1.6vw;
   text-decoration: none;
   white-space: nowrap;
-  font-size: clamp(1rem, 2vw + 1rem, 1.5rem);
+  font-size: clamp(0.5rem, 2vw, 1.5rem);
 }
 
 label:hover
