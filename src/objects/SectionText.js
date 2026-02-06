@@ -349,8 +349,6 @@ export class SectionText
         this.origQuat = this.camera.quaternion.clone();
         this.origPolar = this.main.controls.getPolarAngle();
         this.origAzim = this.main.controls.getAzimuthalAngle();
-        //this.origSpherical.
-        //this.camera.position.setFromSpherical(this.targetSpherical);
         let z = new THREE.Vector3(0, 0, 0);
         this.cameraTween = new TWEEN.Tween(z)
         .to({x: 1}, this.zoomInTime)
