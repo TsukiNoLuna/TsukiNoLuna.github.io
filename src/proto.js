@@ -162,7 +162,8 @@ class Main
     {
       this.hasInit = true;
       document.getElementById("view").appendChild(this.renderer.domElement);
-      document.getElementById("navbar").style.opacity = 0.5;
+      //document.getElementById("navbar").style.opacity = 0.5;
+      document.getElementById("navbar").style.opacity = 0;
       //document.getElementById("view").removeChild(document.getElementById("container"));
     }
     const raycaster = new THREE.Raycaster();

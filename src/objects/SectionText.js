@@ -353,17 +353,12 @@ export class SectionText
         this.cameraTween = new TWEEN.Tween(z)
         .to({x: 1}, this.zoomInTime)
         .onUpdate(() => {
-         //let polar = lerp(this.origPolar, this.polar, this.cameraTween._object.x);
-         //let azim = lerp(this.origAzim, this.azim, this.cameraTween._object.x);
-         //let spherical = new THREE.Spherical(this.main.camDist, polar, azim);
-         //spherical.makeSafe();
-         //this.camera.position.setFromSpherical(spherical);
          this.camera.quaternion.copy(this.origQuat);
          this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
 
          this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
          this.textCloud.material.opacity = 1 - this.cameraTween._object.x;
-         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
+         //document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
@@ -462,16 +457,12 @@ export class SectionText
         this.cameraTween = new TWEEN.Tween(z)
         .to({x: 1}, this.headerClickTime)
         .onUpdate(() => {
-         //let polar = lerp(this.origPolar, this.polar, this.cameraTween._object.x);
-         //let azim = lerp(this.origAzim, this.azim, this.cameraTween._object.x);
-         //let spherical = new THREE.Spherical(this.main.camDist, polar, azim);
-         //spherical.makeSafe();
-         //this.camera.position.setFromSpherical(spherical);
+
          this.camera.quaternion.copy(this.origQuat);
          this.camera.quaternion.slerp(this.targetQuat, this.cameraTween._object.x);
 
          this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
-         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
+         //document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
@@ -556,7 +547,7 @@ export class SectionText
         .onUpdate(() => {
          this.camera.zoom = this.main.initialZoom + (this.cameraTween._object.x * this.main.zoomFactor);
          this.textCloud.material.opacity = 1 - this.cameraTween._object.x;
-         document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
+         //document.getElementById("navbar").style.opacity = (1 - this.cameraTween._object.x)/2;
          this.camera.updateProjectionMatrix();
         })
         .onComplete(() => {
